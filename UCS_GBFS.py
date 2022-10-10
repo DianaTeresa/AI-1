@@ -122,4 +122,4 @@ def main():
     for mapNo in range(nMaps):
         a, start, dest = readInput(f'input\\input{mapNo + 1}.txt')
         printMaze(GBFS_Heur1(a, start, dest), start, f'output\\output{mapNo + 1}.txt')
-main()
+#main()
