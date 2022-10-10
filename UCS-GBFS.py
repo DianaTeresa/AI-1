@@ -26,7 +26,7 @@ def readInput(path):
             for chr in line:
                 if j == c_size: break
                 a[i][j] = 1 if chr == 'x' else a[i][j]
-                if chr == '*': start = (i, j)
+                if chr == 'S': start = (i, j)
                 if a[i][j] == 0 and (i == 0 or i == r_size - 1 or j == 0 or j == c_size -1):
                     dest = (i, j)
                 j += 1
@@ -40,7 +40,7 @@ def printMaze(a, start, path):
         for i in range(r_size):
             for j in range(c_size):
                 if i == start[0] and j == start[1]:
-                    f.write('*')
+                    f.write('S')
                     continue
                 if a[i][j] == 1:
                     f.write('x')
@@ -92,7 +92,7 @@ def GBFS_Heur1(a, start, dest):
     """
     r_size, c_size = len(a), len(a[0])
     trace = [[None for i in range(c_size)] for j in range(r_size)]
-    PQ = PriorityQueue(len(a) * len(a[0]))
+    PQ = PriorityQueue(r_size * c_size)
     PQ.put((0, start))
     while not PQ.empty():
         p, u = PQ.get()
@@ -110,7 +110,24 @@ def GBFS_Heur1(a, start, dest):
     return createPath(a, trace, start, dest)
 # Second Heuristic
 def GBFS_Heur2(a, start, dest):
-    pass
+    r_size, c_size = len(a), len(a[0])
+    trace = [[None for i in range(c_size)] for j in range(r_size)]
+    PQ = PriorityQueue(r_size * c_size)
+    PQ.put((0, start))
+    while not PQ.empty():
+        p, u = PQ.get()
+        if (u == dest):
+            break
+        for k in range(4):
+            v = (u[0] + row[k], u[1] + col[k])
+            if v[0] < 0 or v[0] > r_size or v[1] < 0 or v[1] > c_size:
+                continue
+            if a[v[0]][v[1]] == 1 or trace[v[0]][v[1]] != None: 
+                continue
+            trace[v[0]][v[1]] = u
+            PQ.put((abs(v[0] - dest[0]) + abs(v[1] - dest[1]), v))
+    if trace[dest[0]][dest[1]] == None: return None
+    return createPath(a, trace, start, dest)
 # Main program
 # Create output folder
 script_path = os.path.realpath(__file__)
@@ -121,5 +138,5 @@ if not os.path.exists(new_abs_path):
 def main():
     for mapNo in range(nMaps):
         a, start, dest = readInput(f'input\\input{mapNo + 1}.txt')
-        printMaze(GBFS_Heur1(a, start, dest), start, f'output\\output{mapNo + 1}.txt')
+        printMaze(GBFS_Heur2(a, start, dest), start, f'output\\output{mapNo + 1}.txt')
 main()
