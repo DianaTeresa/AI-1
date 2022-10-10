@@ -1,5 +1,5 @@
 from queue import PriorityQueue
-import os, sys
+import os, math
 row = [-1, 0, 1, 0]
 col = [0, 1, 0, -1]
 oo = 100000000
@@ -77,7 +77,7 @@ def UCS(a, start, dest):
                 continue
             if a[v[0]][v[1]] == 1 or trace[v[0]][v[1]] != None: 
                 continue
-            w = 1 if a[v[0]][v[1]] >= 0 else a[v[0]][v[1]]
+            w = 1
             if d[v[0]][v[1]] > p + w:
                 trace[v[0]][v[1]] = u
                 d[v[0]][v[1]] = p + w
@@ -87,6 +87,29 @@ def UCS(a, start, dest):
 # Greedy Best-first Search Algorithm
 # First Heuristic
 def GBFS_Heur1(a, start, dest):
+    """ Heuristic function: h(x, y) = d((x, y), dest) 
+        with d(A, B) is the Euclidean distance of A and B
+    """
+    r_size, c_size = len(a), len(a[0])
+    trace = [[None for i in range(c_size)] for j in range(r_size)]
+    PQ = PriorityQueue(len(a) * len(a[0]))
+    PQ.put((0, start))
+    while not PQ.empty():
+        p, u = PQ.get()
+        if (u == dest):
+            break
+        for k in range(4):
+            v = (u[0] + row[k], u[1] + col[k])
+            if v[0] < 0 or v[0] > r_size or v[1] < 0 or v[1] > c_size:
+                continue
+            if a[v[0]][v[1]] == 1 or trace[v[0]][v[1]] != None: 
+                continue
+            trace[v[0]][v[1]] = u
+            PQ.put((math.sqrt((v[0] - dest[0]) ** 2 + (v[1] - dest[1]) ** 2), v))
+    if trace[dest[0]][dest[1]] == None: return None
+    return createPath(a, trace, start, dest)
+# Second Heuristic
+def GBFS_Heur2(a, start, dest):
     pass
 # Main program
 # Create output folder
@@ -98,5 +121,5 @@ if not os.path.exists(new_abs_path):
 def main():
     for mapNo in range(nMaps):
         a, start, dest = readInput(f'input\\input{mapNo + 1}.txt')
-        printMaze(UCS(a, start, dest), start, f'output\\output{mapNo + 1}.txt')
+        printMaze(GBFS_Heur1(a, start, dest), start, f'output\\output{mapNo + 1}.txt')
 main()
