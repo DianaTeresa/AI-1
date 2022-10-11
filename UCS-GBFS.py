@@ -26,7 +26,7 @@ def readInput(path):
             for chr in line:
                 if j == c_size: break
                 a[i][j] = 1 if chr == 'x' else a[i][j]
-                if chr == '*': start = (i, j)
+                if chr == 'S': start = (i, j)
                 if a[i][j] == 0 and (i == 0 or i == r_size - 1 or j == 0 or j == c_size -1):
                     dest = (i, j)
                 j += 1
@@ -54,11 +54,12 @@ def printMaze(a, start, path):
                 f.write(' ')
             f.write('\n')
 # Visualize a solution
-def createPath(a, trace, start, dest):
+def createPath(trace, start, dest):
+    l = [dest]
     while dest != start:
-        a[dest[0]][dest[1]] = 2
         dest = trace[dest[0]][dest[1]]
-    return a
+        l.append(dest)
+    return l[0:][slice(None, None, -1)]
 # UCS Algorithm
 def UCS(a, start, dest):
     r_size, c_size = len(a), len(a[0])
@@ -83,7 +84,7 @@ def UCS(a, start, dest):
                 d[v[0]][v[1]] = p + w
                 PQ.put((d[v[0]][v[1]], v))
     if trace[dest[0]][dest[1]] == None: return None
-    return createPath(a, trace, start, dest)
+    return createPath(trace, start, dest)
 # Greedy Best-first Search Algorithm
 # First Heuristic
 def GBFS_Heur1(a, start, dest):
@@ -99,4 +100,3 @@ def main():
     for mapNo in range(nMaps):
         a, start, dest = readInput(f'input\\input{mapNo + 1}.txt')
         printMaze(UCS(a, start, dest), start, f'output\\output{mapNo + 1}.txt')
-main()
