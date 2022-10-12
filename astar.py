@@ -7,19 +7,12 @@ row = [-1, 0, 1, 0]
 col = [0, 1, 0, -1]
 weight = 1
 
-
-def reconstruct_path(trace, start, end):
-    current = end
-    path = [current]
-    while trace:
-        current = trace.pop()
-        path.append(current)
-    path.reverse()
-    return path
-
 def Is_Valid_Position(graph, node): 
-    if node[0] >= 0 and node[0] < len(graph) and node[1] >=0 and node[1] <len(graph):
-        return graph[node[0]][node[1]] == 0
+    if node[0] >= 0:
+        if  node[0] < len(graph):
+            if node[1] >=0:
+                if node[1] <len(graph[0]):
+                    return graph[node[0]][node[1]] == 0
     return False
 
 def Heuristic_1(current_node, goal):
@@ -38,7 +31,7 @@ def Heuristic_2(current_node, goal):
 
 def a_star(graph, start, end):
     distances = {(start[0], start[1]): 0}
-    trace = {start:(0,0)}
+    trace = {start:None}
     visited = set()
 
     pq = PriorityQueue()
@@ -67,10 +60,13 @@ def a_star(graph, start, end):
 
     path=[]
     f=end
-    while trace[f]!=(0,0):
+    while trace[f]!=None:
         path.append(trace[f])
         f=trace[f]
         
     path.reverse()
     path.append(end)
     return path
+
+graph,start,end = GBFS.readInput("5.txt");
+print(a_star(graph,start,end))
