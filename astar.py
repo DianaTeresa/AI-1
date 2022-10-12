@@ -1,6 +1,7 @@
 from queue import PriorityQueue
 import math
 import UCS_GBFS as GBFS
+import DFS_BFS as dbfs
 
 row = [-1, 0, 1, 0]
 col = [0, 1, 0, -1]
@@ -8,7 +9,7 @@ weight = 1
 
 
 def reconstruct_path(trace, start, end):
-    current = (end[0],end[1])
+    current = end
     path = [current]
     while trace:
         current = trace.pop()
@@ -37,7 +38,7 @@ def Heuristic_2(current_node, goal):
 
 def a_star(graph, start, end):
     distances = {(start[0], start[1]): 0}
-    trace = [[None for i in range(len(graph[0]))] for j in range(len(graph))]
+    trace = {start:(0,0)}
     visited = set()
 
     pq = PriorityQueue()
@@ -60,13 +61,16 @@ def a_star(graph, start, end):
                     distances[new_node] = new_distance
                     priority = new_distance + Heuristic_1(new_node, end)
                     pq.put((priority, new_node))
-                    trace[new_node[0]][new_node[1]] = node
+                    trace[new_node] = node
         
         visited.add(node)
 
-    return trace #reconstruct_path(trace, start, end)
-  
- 
-graph, start, end = GBFS.readInput("1.txt")
-trace = a_star(graph, start, end)
-GBFS.printMaze(GBFS.createPath(graph,trace,start,end), start, "output1.txt")
+    path=[]
+    f=end
+    while trace[f]!=(0,0):
+        path.append(trace[f])
+        f=trace[f]
+        
+    path.reverse()
+    path.append(end)
+    return path
