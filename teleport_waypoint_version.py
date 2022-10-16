@@ -1,19 +1,35 @@
 
 def read_file(file_name: str):
   f = open(file_name,'r')
-  n_portals = int(next(f)[:-1])
-  portals = []
-  for i in range(n_portals):
-    x, y, x1, y1 = map(int, next(f)[:-1].split(' '))
-    portals.append((x, y, x1, y1))
+  n = int(next(f)[:-1])
+  portals = bonus_points = None
+  temp = [i for i in map(int, next(f)[:-1].split(' '))]
+  if len(temp) == 4:
+    portals = [(temp[0], temp[1], temp[2], temp[3])]
+  else:
+    bonus_points = [(temp[0], temp[1], temp[2])]
+  if portals is not None:
+    for i in range(n - 1):
+      x, y, x1, y1 = map(int, next(f)[:-1].split(' '))
+      portals.append((x, y, x1, y1))
+  else: 
+    for i in range(n - 1):
+      x, y, z = map(int, next(f)[:-1].split(' '))
+      bonus_points.append((x, y, z))
+    pass
   text = f.read()
   matrix = [list(i) for i in text.splitlines()]
   f.close()
   # Insert portals
-  for p in portals:
-    x, y, x1, y1 = p
-    matrix[x][y] = (x1, y1)
-    matrix[x1][y1] = (x, y)
+  if portals is not None:
+    for p in portals:
+      x, y, x1, y1 = p
+      matrix[x][y] = (x1, y1)
+      matrix[x1][y1] = (x, y)
+  else: # Insert bonus points
+    for b in bonus_points:
+      x, y, z = b
+      matrix[x][y] = z
   # Find start and goal node
   start = goal = None
   for i in range(len(matrix)):
@@ -59,7 +75,7 @@ def BFS(a, start, goal):
   if trace[goal[0]][goal[1]] == None: return None
   return createPath(trace, start, goal)
 
-# a, start, goal = read_file("input.txt")
+a, start, goal = read_file("input_teleportation.txt")
 # printMaze(BFS(a, start, goal), start, "output.txt")
 
 # For testing and debugging
