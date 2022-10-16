@@ -53,7 +53,7 @@ def printMaze(a, start, path):
                     continue
                 f.write(' ')
             f.write('\n')
-# Visualize a solution
+# Create a solution
 def createPath(trace, start, dest):
     l = [dest]
     while dest != start:
