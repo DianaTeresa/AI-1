@@ -33,6 +33,7 @@ def a_star(graph, start, end):
     distances = {(start[0], start[1]): 0}
     trace = {start:None}
     visited = set()
+    open = [start]
 
     pq = PriorityQueue()
     pq.put((0, (start[0], start[1])))
@@ -49,6 +50,7 @@ def a_star(graph, start, end):
             if Is_Valid_Position(graph, new_node) and new_node not in visited:
                 old_distance = distances.get(new_node, float('inf'))
                 new_distance = distances[node] + weight
+                open.append(new_node)
                 
                 if new_distance < old_distance:
                     distances[new_node] = new_distance
@@ -66,7 +68,7 @@ def a_star(graph, start, end):
         
     path.reverse()
     path.append(end)
-    return path
+    return path, open
 
 graph,start,end = GBFS.readInput("5.txt");
 print(a_star(graph,start,end))
