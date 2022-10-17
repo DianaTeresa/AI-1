@@ -1,5 +1,6 @@
 
 import os
+from re import S
 import matplotlib.pyplot as plt
 import copy
 from heapq import heappop
@@ -7,11 +8,12 @@ from heapq import heappush
 from queue import PriorityQueue
 import math
 import pygame
+import teleport_waypoint_version as tlp
 row = [-1, 0, 1, 0]
 col = [0, 1, 0, -1]
 weight =1 
 oo = 100000000
-def visualize_maze(matrix, bonus, start, end, route=None):
+def visualize_maze(matrix, bonus, portal, start, end, route=None):
     """
     Args:
       1. matrix: The matrix read from the input file,
@@ -45,7 +47,8 @@ def visualize_maze(matrix, bonus, start, end, route=None):
     plt.scatter([i[1] for i in walls],[-i[0] for i in walls],
                 marker='X',s=100,color='black')
     
-    plt.scatter([i[1] for i in bonus],[-i[0] for i in bonus],
+    if bonus:
+        plt.scatter([i[1] for i in bonus],[-i[0] for i in bonus],
                 marker='P',s=100,color='green')
 
     plt.scatter(start[1],-start[0],marker='*',
@@ -55,6 +58,11 @@ def visualize_maze(matrix, bonus, start, end, route=None):
         for i in range(len(route)-2):
             plt.scatter(route[i+1][1],-route[i+1][0],
                         marker=direction[i],color='silver')
+
+    if portal:
+        for i in range(len(portal)):
+            plt.text(portal[i][1], -portal[i][0], s=chr(i + 49), color='green', fontsize = 14, weight='bold')
+            plt.text(portal[i][3], -portal[i][2], s=chr(i + 49), color='green', fontsize = 14, weight='bold')
 
     plt.text(end[1],-end[0],'EXIT',color='red',
         horizontalalignment='center',
@@ -66,22 +74,58 @@ def visualize_maze(matrix, bonus, start, end, route=None):
     print(f'Starting point (x, y) = {start[0], start[1]}')
     print(f'Ending point (x, y) = {end[0], end[1]}')
     
-    for _, point in enumerate(bonus):
-        print(f'Bonus point at position (x, y) = {point[0], point[1]} with point {point[2]}')
+    if bonus:
+        for _, point in enumerate(bonus):
+            print(f'Bonus point at position (x, y) = {point[0], point[1]} with point {point[2]}')
 
-def read_file(file_name: str = 'maze.txt'):
-    f=open(file_name,'r')
-    n_bonus_points = int(next(f)[:-1])
-    bonus_points = []
-    for i in range(n_bonus_points):
-        x, y, reward = map(int, next(f)[:-1].split(' '))
-        bonus_points.append((x, y, reward))
+# def read_file(file_name: str = 'maze.txt'):
+#     f=open(file_name,'r')
+#     n_bonus_points = int(next(f)[:-1])
+#     bonus_points = []
+#     for i in range(n_bonus_points):
+#         x, y, reward = map(int, next(f)[:-1].split(' '))
+#         bonus_points.append((x, y, reward))
 
-    text=f.read()
-    matrix=[list(i) for i in text.splitlines()]
+#     text=f.read()
+#     matrix=[list(i) for i in text.splitlines()]
+#     f.close()
+
+#     return bonus_points, matrix
+
+def read_file(file_name: str):
+    f = open(file_name,'r')
+    n = int(next(f)[:-1])
+    portals = bonus_points = None
+    if n > 0:
+        temp = [i for i in map(int, next(f)[:-1].split(' '))]
+        if len(temp) == 4:
+            portals = [(temp[0], temp[1], temp[2], temp[3])]
+        else:
+            bonus_points = [(temp[0], temp[1], temp[2])]
+        if portals is not None:
+            for i in range(n - 1):
+                x, y, x1, y1 = map(int, next(f)[:-1].split(' '))
+                portals.append((x, y, x1, y1))
+        else: 
+            for i in range(n - 1):
+                x, y, z = map(int, next(f)[:-1].split(' '))
+                bonus_points.append((x, y, z))
+            pass
+    text = f.read()
+    matrix = [list(i) for i in text.splitlines()]
     f.close()
+    if n > 0: # Insert portals
+        if portals is not None:
+            for p in portals:
+                x, y, x1, y1 = p
+                matrix[x][y] = (x1, y1)
+                matrix[x1][y1] = (x, y)
+        else: # Insert bonus points
+            for b in bonus_points:
+                x, y, z = b
+                matrix[x][y] = z
+    return bonus_points, portals, matrix
 
-    return bonus_points, matrix
 
 # Tìm kiếm mù
 def dfs(graph, start, end):
@@ -215,7 +259,7 @@ def createPath(trace, start, dest):
         dest = trace[dest[0]][dest[1]]
         l.append(dest)
     return l[0:][slice(None, None, -1)]
-
+# First heuristic: Euclidean distance
 def GBFS_Heur1(a, start, dest):
     """ Heuristic function: h(x, y) = d((x, y), dest) 
         with d(A, B) is the Euclidean distance of A and B
@@ -238,7 +282,7 @@ def GBFS_Heur1(a, start, dest):
             PQ.put((math.sqrt((v[0] - dest[0]) ** 2 + (v[1] - dest[1]) ** 2), v))
     if trace[dest[0]][dest[1]] == None: return None
     return createPath(trace, start, dest)
-# Second Heuristic
+# Second heuristic: Mahattan distance
 def GBFS_Heur2(a, start, dest):
     r_size, c_size = len(a), len(a[0])
     trace = [[None for i in range(c_size)] for j in range(r_size)]
@@ -296,9 +340,9 @@ def PGAME():
     pygame.quit()
 def main():
     
-    for mapId in range(2,3):
-        bonus_points, matrix = read_file(f'../Maps/Maapp/{mapId}.txt')
-
+    for mapId in range(1):
+        # bonus_points, portals, matrix = read_file(f'{mapId + 1}.txt')
+        bonus_points, portals, matrix = read_file('input_teleportation.txt')
         print(f'The height of the matrix: {len(matrix)}')
         print(f'The width of the matrix: {len(matrix[0])}')
 
@@ -329,30 +373,31 @@ def main():
                     adj.append(1)
             graph.append(adj)
 
+        wayout = tlp.BFS(matrix, start, end)
+        visualize_maze(matrix, bonus_points, portals, start, end, wayout)
+        # wayoutDFS=dfs(graph, start, end)
+        # visualize_maze(matrix,bonus_points,start,end,wayoutDFS)
+        # print(f'DFS: Cost = {len(wayoutDFS)-1}\n')
+
+        # wayoutBFS=bfs(graph, start, end)
+        # visualize_maze(matrix,bonus_points,start,end,wayoutBFS)
+        # print(f'BFS: Cost = {len(wayoutBFS)-1}\n')
         
-        wayoutDFS=dfs(graph, start, end)
-        visualize_maze(matrix,bonus_points,start,end,wayoutDFS)
-        print(f'DFS: Cost = {len(wayoutDFS)-1}\n')
+        # wayoutUCS=UCS(graph, start, end)
+        # visualize_maze(matrix,bonus_points,start,end,wayoutUCS)
+        # print(f'UCS: Cost = {len(wayoutUCS)-1}\n')
 
-        wayoutBFS=bfs(graph, start, end)
-        visualize_maze(matrix,bonus_points,start,end,wayoutBFS)
-        print(f'BFS: Cost = {len(wayoutBFS)-1}\n')
-        
-        wayoutUCS=UCS(graph, start, end)
-        visualize_maze(matrix,bonus_points,start,end,wayoutUCS)
-        print(f'UCS: Cost = {len(wayoutUCS)-1}\n')
+        # wayoutGBFS1=GBFS_Heur1(graph, start, end)
+        # visualize_maze(matrix,bonus_points,start,end,wayoutGBFS1)
+        # print(f'GBFS1: Cost = {len(wayoutGBFS1)-1}\n')
 
-        wayoutGBFS1=GBFS_Heur1(graph, start, end)
-        visualize_maze(matrix,bonus_points,start,end,wayoutGBFS1)
-        print(f'GBFS1: Cost = {len(wayoutGBFS1)-1}\n')
+        # wayoutGBFS2=GBFS_Heur2(graph, start, end)
+        # visualize_maze(matrix,bonus_points,start,end,wayoutGBFS2)
+        # print(f'GBFS2: Cost = {len(wayoutGBFS2)-1}\n')
 
-        wayoutGBFS2=GBFS_Heur2(graph, start, end)
-        visualize_maze(matrix,bonus_points,start,end,wayoutGBFS2)
-        print(f'GBFS2: Cost = {len(wayoutGBFS2)-1}\n')
-
-        wayoutASTAR=a_star(graph, start, end)
-        visualize_maze(matrix,bonus_points,start,end,wayoutASTAR)
-        print(f'A_STAR: Cost = {len(wayoutASTAR)-1}\n')
+        # wayoutASTAR=a_star(graph, start, end)
+        # visualize_maze(matrix,bonus_points,start,end,wayoutASTAR)
+        # print(f'A_STAR: Cost = {len(wayoutASTAR)-1}\n')
         PGAME()
 
 if __name__=="__main__":

@@ -75,7 +75,10 @@ def BFS(a, start, goal):
   if trace[goal[0]][goal[1]] == None: return None
   return createPath(trace, start, goal)
 
-a, start, goal = read_file("input_teleportation.txt")
+def A_star(a, start, goal):
+  
+  pass
+# a, start, goal = read_file("input_teleportation.txt")
 # printMaze(BFS(a, start, goal), start, "output.txt")
 
 # For testing and debugging
