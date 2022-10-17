@@ -55,6 +55,7 @@ def BFS(a, start, goal):
   r_size, c_size = len(a), len(a[0])
   trace = [[None for i in range(c_size)] for j in range(r_size)]
   Q = [start]
+  op = []
   while Q:
     u = Q.pop(0)
     if (u == goal):
@@ -71,10 +72,12 @@ def BFS(a, start, goal):
         if trace[w[0]][w[1]] is None:
           trace[w[0]][w[1]] = v
           Q.append(w)
+          op.append(w)
           continue
       Q.append(v)
+      op.append(v)
   if trace[goal[0]][goal[1]] == None: return None
-  return createPath(trace, start, goal)
+  return createPath(trace, start, goal), op
 # A_star Algorithm for maps with bonus points
 row = [-1, 0, 1, 0]
 col = [0, 1, 0, -1]

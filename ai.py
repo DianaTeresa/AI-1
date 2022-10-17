@@ -268,6 +268,7 @@ def GBFS_Heur1(a, start, dest):
     trace = [[None for i in range(c_size)] for j in range(r_size)]
     PQ = PriorityQueue(r_size * c_size)
     PQ.put((0, start))
+    op = []
     while not PQ.empty():
         p, u = PQ.get()
         if (u == dest):
@@ -279,15 +280,17 @@ def GBFS_Heur1(a, start, dest):
             if a[v[0]][v[1]] == 1 or trace[v[0]][v[1]] != None: 
                 continue
             trace[v[0]][v[1]] = u
+            op.append(v)
             PQ.put((math.sqrt((v[0] - dest[0]) ** 2 + (v[1] - dest[1]) ** 2), v))
     if trace[dest[0]][dest[1]] == None: return None
-    return createPath(trace, start, dest)
+    return createPath(trace, start, dest), op
 # Second heuristic: Mahattan distance
 def GBFS_Heur2(a, start, dest):
     r_size, c_size = len(a), len(a[0])
     trace = [[None for i in range(c_size)] for j in range(r_size)]
     PQ = PriorityQueue(r_size * c_size)
     PQ.put((0, start))
+    op = []
     while not PQ.empty():
         p, u = PQ.get()
         if (u == dest):
@@ -299,9 +302,10 @@ def GBFS_Heur2(a, start, dest):
             if a[v[0]][v[1]] == 1 or trace[v[0]][v[1]] != None: 
                 continue
             trace[v[0]][v[1]] = u
+            op.append(v)
             PQ.put((abs(v[0] - dest[0]) + abs(v[1] - dest[1]), v))
     if trace[dest[0]][dest[1]] == None: return None
-    return createPath(trace, start, dest)
+    return createPath(trace, start, dest), op
 
 def UCS(a, start, dest):
     r_size, c_size = len(a), len(a[0])
@@ -310,6 +314,7 @@ def UCS(a, start, dest):
     d[start[0]][start[1]] = 0
     PQ = PriorityQueue(len(a) * len(a[0]))
     PQ.put((0, start))
+    op = []
     while not PQ.empty():
         p, u = PQ.get()
         if (u == dest):
@@ -324,9 +329,10 @@ def UCS(a, start, dest):
             if d[v[0]][v[1]] > p + w:
                 trace[v[0]][v[1]] = u
                 d[v[0]][v[1]] = p + w
+                op.append(v)
                 PQ.put((d[v[0]][v[1]], v))
     if trace[dest[0]][dest[1]] == None: return None
-    return createPath(trace, start, dest)
+    return createPath(trace, start, dest), op
 
 def PGAME():
     weight =500
