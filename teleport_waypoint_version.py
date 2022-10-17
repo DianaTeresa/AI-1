@@ -96,8 +96,8 @@ def A_star(a, start, goal):
               continue
           if a[v[0]][v[1]] == 1 or trace[v[0]][v[1]] != None: 
               continue
-          w = 1
-          if d[v[0]][v[1]] > p + w:
+          w = a[v[0]][v[1]] if a[v[0]][v[1]] < 0 else 1
+          if d[v[0]][v[1]] > p + w + abs(v[0] - goal[0]) + abs(v[1] - goal[1]):
               trace[v[0]][v[1]] = u
               d[v[0]][v[1]] = p + w
               PQ.put((d[v[0]][v[1]], v))

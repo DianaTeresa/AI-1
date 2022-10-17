@@ -11,15 +11,16 @@ import pygame
 import teleport_waypoint_version as tlp
 row = [-1, 0, 1, 0]
 col = [0, 1, 0, -1]
-weight =1 
+weight = 1 
 oo = 100000000
 def visualize_maze(matrix, bonus, portal, start, end, route=None):
     """
     Args:
       1. matrix: The matrix read from the input file,
       2. bonus: The array of bonus points,
-      3. start, end: The starting and ending points,
-      4. route: The route from the starting point to the ending one, defined by an array of (x, y), e.g. route = [(1, 2), (1, 3), (1, 4)]
+      3. portal: The array of portals,
+      4. start, end: The starting and ending points,
+      5. route: The route from the starting point to the ending one, defined by an array of (x, y), e.g. route = [(1, 2), (1, 3), (1, 4)]
     """
     #1. Define walls and array of direction based on the route
     walls=[(i,j) for i in range(len(matrix)) for j in range(len(matrix[0])) if matrix[i][j]=='x']
@@ -61,8 +62,8 @@ def visualize_maze(matrix, bonus, portal, start, end, route=None):
 
     if portal:
         for i in range(len(portal)):
-            plt.text(portal[i][1], -portal[i][0], s=chr(i + 49), color='green', fontsize = 14, weight='bold')
-            plt.text(portal[i][3], -portal[i][2], s=chr(i + 49), color='green', fontsize = 14, weight='bold')
+            plt.text(portal[i][1], -portal[i][0], s=chr(i + 49), color='green', fontsize = 10, weight='bold')
+            plt.text(portal[i][3], -portal[i][2], s=chr(i + 49), color='green', fontsize = 10, weight='bold')
 
     plt.text(end[1],-end[0],'EXIT',color='red',
         horizontalalignment='center',
@@ -340,9 +341,9 @@ def PGAME():
     pygame.quit()
 def main():
     
-    for mapId in range(1, 2):
+    for mapId in range(3):
         # bonus_points, portals, matrix = read_file(f'{mapId + 1}.txt')
-        bonus_points, portals, matrix = read_file(f'teleport_map{mapId + 1}.txt')
+        bonus_points, portals, matrix = read_file(f'bonus_map{mapId + 1}.txt')
         print(f'The height of the matrix: {len(matrix)}')
         print(f'The width of the matrix: {len(matrix[0])}')
 
@@ -372,10 +373,15 @@ def main():
                 else:
                     adj.append(1)
             graph.append(adj)
+        # Test map with portals
+        # wayout = tlp.BFS(matrix, start, end)
+        # visualize_maze(matrix, bonus_points, portals, start, end, wayout)
+        # print(f'Cost = {len(wayout) - 1}\n')
 
-        wayout = tlp.BFS(matrix, start, end)
+        # Test map with bonus points
+        wayout = tlp.A_star(graph, start, end)
         visualize_maze(matrix, bonus_points, portals, start, end, wayout)
-        print(f'Cost = {len(wayout) - 1}\n')
+
         # wayoutDFS=dfs(graph, start, end)
         # visualize_maze(matrix,bonus_points,start,end,wayoutDFS)
         # print(f'DFS: Cost = {len(wayoutDFS)-1}\n')
