@@ -87,7 +87,7 @@ def A_star(a, start, goal):
   PQ = PriorityQueue(len(a) * len(a[0]))
   PQ.put((0, start))
   while not PQ.empty():
-      p, u = PQ.get()
+      _, u = PQ.get()
       if (u == goal):
           break
       for k in range(4):
@@ -97,9 +97,10 @@ def A_star(a, start, goal):
           if a[v[0]][v[1]] == 1 or trace[v[0]][v[1]] != None: 
               continue
           w = a[v[0]][v[1]] if a[v[0]][v[1]] < 0 else 1
-          if d[v[0]][v[1]] > p + w + abs(v[0] - goal[0]) + abs(v[1] - goal[1]):
+          h = abs(v[0] - goal[0]) + abs(v[1] - goal[1])
+          if d[v[0]][v[1]] > d[u[0]][u[1]] + w + h:
               trace[v[0]][v[1]] = u
-              d[v[0]][v[1]] = p + w
+              d[v[0]][v[1]] = d[u[0]][u[1]] + w + h
               PQ.put((d[v[0]][v[1]], v))
   if trace[goal[0]][goal[1]] == None: return None
   return createPath(trace, start, goal)
