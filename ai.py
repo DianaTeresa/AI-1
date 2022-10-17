@@ -340,9 +340,9 @@ def PGAME():
     pygame.quit()
 def main():
     
-    for mapId in range(1):
+    for mapId in range(1, 2):
         # bonus_points, portals, matrix = read_file(f'{mapId + 1}.txt')
-        bonus_points, portals, matrix = read_file('input_teleportation.txt')
+        bonus_points, portals, matrix = read_file(f'teleport_map{mapId + 1}.txt')
         print(f'The height of the matrix: {len(matrix)}')
         print(f'The width of the matrix: {len(matrix[0])}')
 
@@ -375,6 +375,7 @@ def main():
 
         wayout = tlp.BFS(matrix, start, end)
         visualize_maze(matrix, bonus_points, portals, start, end, wayout)
+        print(f'Cost = {len(wayout) - 1}\n')
         # wayoutDFS=dfs(graph, start, end)
         # visualize_maze(matrix,bonus_points,start,end,wayoutDFS)
         # print(f'DFS: Cost = {len(wayoutDFS)-1}\n')

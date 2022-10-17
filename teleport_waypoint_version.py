@@ -1,4 +1,5 @@
-
+from queue import PriorityQueue
+# Process maps with teleport waypoints
 def read_file(file_name: str):
   f = open(file_name,'r')
   n = int(next(f)[:-1])
@@ -40,14 +41,14 @@ def read_file(file_name: str):
         goal = (i, j)
       if start is not None and goal is not None:
         return matrix, start, goal
-
+# Create a solution
 def createPath(trace, start, dest):
     l = [dest]
     while dest != start:
         dest = trace[dest[0]][dest[1]]
         l.append(dest)
     return l[0:][slice(None, None, -1)]
-
+# BFS Algorithm
 def BFS(a, start, goal):
   row = [-1, 0, 1, 0]
   col = [0, 1, 0, -1]
@@ -55,7 +56,7 @@ def BFS(a, start, goal):
   trace = [[None for i in range(c_size)] for j in range(r_size)]
   Q = [start]
   while Q:
-    u = Q.pop()
+    u = Q.pop(0)
     if (u == goal):
       break
     for k in range(4):
@@ -74,9 +75,34 @@ def BFS(a, start, goal):
       Q.append(v)
   if trace[goal[0]][goal[1]] == None: return None
   return createPath(trace, start, goal)
-
+# A_star Algorithm for maps with bonus points
+row = [-1, 0, 1, 0]
+col = [0, 1, 0, -1]
+oo = 100000000
 def A_star(a, start, goal):
-  
+  r_size, c_size = len(a), len(a[0])
+  d = [[oo for i in range(c_size)] for j in range(r_size)]
+  trace = [[None for i in range(c_size)] for j in range(r_size)]
+  d[start[0]][start[1]] = 0
+  PQ = PriorityQueue(len(a) * len(a[0]))
+  PQ.put((0, start))
+  while not PQ.empty():
+      p, u = PQ.get()
+      if (u == goal):
+          break
+      for k in range(4):
+          v = (u[0] + row[k], u[1] + col[k])
+          if v[0] < 0 or v[0] > r_size or v[1] < 0 or v[1] > c_size:
+              continue
+          if a[v[0]][v[1]] == 1 or trace[v[0]][v[1]] != None: 
+              continue
+          w = 1
+          if d[v[0]][v[1]] > p + w:
+              trace[v[0]][v[1]] = u
+              d[v[0]][v[1]] = p + w
+              PQ.put((d[v[0]][v[1]], v))
+  if trace[goal[0]][goal[1]] == None: return None
+  return createPath(trace, start, goal)
   pass
 # a, start, goal = read_file("input_teleportation.txt")
 # printMaze(BFS(a, start, goal), start, "output.txt")
