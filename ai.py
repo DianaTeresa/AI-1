@@ -270,7 +270,7 @@ def GBFS_Heur1(a, start, dest):
     PQ.put((0, start))
     op = []
     while not PQ.empty():
-        p, u = PQ.get()
+        _, u = PQ.get()
         if (u == dest):
             break
         for k in range(4):
@@ -292,7 +292,7 @@ def GBFS_Heur2(a, start, dest):
     PQ.put((0, start))
     op = []
     while not PQ.empty():
-        p, u = PQ.get()
+        _, u = PQ.get()
         if (u == dest):
             break
         for k in range(4):
