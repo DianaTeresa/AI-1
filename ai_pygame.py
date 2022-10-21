@@ -25,13 +25,14 @@ KHAKI = (255,246,143)
 weight =500
 height = 500
 
-def visualize_maze(matrix, bonus, start, end, route=None):
+def visualize_maze(matrix, bonus, portal, start, end, route=None):
     """
     Args:
       1. matrix: The matrix read from the input file,
       2. bonus: The array of bonus points,
-      3. start, end: The starting and ending points,
-      4. route: The route from the starting point to the ending one, defined by an array of (x, y), e.g. route = [(1, 2), (1, 3), (1, 4)]
+      3. portal: The array of portals,
+      4. start, end: The starting and ending points,
+      5. route: The route from the starting point to the ending one, defined by an array of (x, y), e.g. route = [(1, 2), (1, 3), (1, 4)]
     """
     #1. Define walls and array of direction based on the route
     walls=[(i,j) for i in range(len(matrix)) for j in range(len(matrix[0])) if matrix[i][j]=='x']
@@ -59,7 +60,8 @@ def visualize_maze(matrix, bonus, start, end, route=None):
     plt.scatter([i[1] for i in walls],[-i[0] for i in walls],
                 marker='X',s=100,color='black')
     
-    plt.scatter([i[1] for i in bonus],[-i[0] for i in bonus],
+    if bonus:
+        plt.scatter([i[1] for i in bonus],[-i[0] for i in bonus],
                 marker='P',s=100,color='green')
 
     plt.scatter(start[1],-start[0],marker='*',
@@ -70,20 +72,27 @@ def visualize_maze(matrix, bonus, start, end, route=None):
             plt.scatter(route[i+1][1],-route[i+1][0],
                         marker=direction[i],color='silver')
 
+    if portal:
+        for i in range(len(portal)):
+            plt.text(portal[i][1], -portal[i][0], s=chr(i + 49), color='green', fontsize = 10, weight='bold')
+            plt.text(portal[i][3], -portal[i][2], s=chr(i + 49), color='green', fontsize = 10, weight='bold')
+
     plt.text(end[1],-end[0],'EXIT',color='red',
         horizontalalignment='center',
         verticalalignment='center')
     plt.xticks([])
     plt.yticks([])
+    #plt.savefig('foo.png', bbox_inches='tight')
     plt.show()
 
     print(f'Starting point (x, y) = {start[0], start[1]}')
     print(f'Ending point (x, y) = {end[0], end[1]}')
     
-    for _, point in enumerate(bonus):
-        print(f'Bonus point at position (x, y) = {point[0], point[1]} with point {point[2]}')
+    if bonus:
+        for _, point in enumerate(bonus):
+            print(f'Bonus point at position (x, y) = {point[0], point[1]} with point {point[2]}')   
 
-def read_file(file_name: str = 'bonus_map1.txt'):
+def read_file(file_name: str = 'maze.txt'):
     f=open(file_name,'r')
     n_bonus_points = int(next(f)[:-1])
     bonus_points = []
@@ -91,11 +100,40 @@ def read_file(file_name: str = 'bonus_map1.txt'):
         x, y, reward = map(int, next(f)[:-1].split(' '))
         bonus_points.append((x, y, reward))
 
-    text=f.read()
-    matrix=[list(i) for i in text.splitlines()]
-    f.close()
 
-    return bonus_points, matrix
+def read_file(file_name: str):
+    f = open(file_name,'r')
+    n = int(next(f)[:-1])
+    portals = bonus_points = None
+    if n > 0:
+        temp = [i for i in map(int, next(f)[:-1].split(' '))]
+        if len(temp) == 4:
+            portals = [(temp[0], temp[1], temp[2], temp[3])]
+        else:
+            bonus_points = [(temp[0], temp[1], temp[2])]
+        if portals is not None:
+            for i in range(n - 1):
+                x, y, x1, y1 = map(int, next(f)[:-1].split(' '))
+                portals.append((x, y, x1, y1))
+        else: 
+            for i in range(n - 1):
+                x, y, z = map(int, next(f)[:-1].split(' '))
+                bonus_points.append((x, y, z))
+            pass
+    text = f.read()
+    matrix = [list(i) for i in text.splitlines()]
+    f.close()
+    if n > 0: # Insert portals
+        if portals is not None:
+            for p in portals:
+                x, y, x1, y1 = p
+                matrix[x][y] = (x1, y1)
+                matrix[x1][y1] = (x, y)
+        else: # Insert bonus points
+            for b in bonus_points:
+                x, y, z = b
+                matrix[x][y] = z
+    return bonus_points, portals, matrix
 
 # Tìm kiếm mù
 def dfs(graph, start, end):
@@ -124,6 +162,7 @@ def dfs(graph, start, end):
     path=[]
     f=end
     while trace[f]!=(0,0):
+        
         path.append(trace[f])
         f=trace[f]
         
@@ -132,7 +171,6 @@ def dfs(graph, start, end):
     return path,open
 
 def bfs(graph, start, end):
-
     trace={start:(0,0)} #mảng truy vết
     queue=[start]
     open = []
@@ -338,6 +376,35 @@ def UCS(a, start, dest):
                 PQ.put((d[v[0]][v[1]], v))
     if trace[dest[0]][dest[1]] == None: return None
     return createPath(trace, start, dest)
+def BFS_teleport(a, start, goal):
+  row = [-1, 0, 1, 0]
+  col = [0, 1, 0, -1]
+  r_size, c_size = len(a), len(a[0])
+  trace = [[None for i in range(c_size)] for j in range(r_size)]
+  Q = [start]
+  op = []
+  while Q:
+    u = Q.pop(0)
+    if (u == goal):
+      break
+    for k in range(4):
+      v = u[0] + row[k], u[1] + col[k]
+      if v[0] < 0 or v[0] > r_size or v[1] < 0 or v[1] > c_size:
+        continue
+      if a[v[0]][v[1]] == 'x' or a[v[0]][v[1]] == 'S' or trace[v[0]][v[1]] is not None: 
+        continue
+      trace[v[0]][v[1]] = u
+      if type(a[v[0]][v[1]]) == tuple:
+        w = a[v[0]][v[1]]
+        if trace[w[0]][w[1]] is None:
+          trace[w[0]][w[1]] = v
+          Q.append(w)
+          op.append(w)
+          continue
+      Q.append(v)
+      op.append(v)
+  if trace[goal[0]][goal[1]] == None: return None
+  return createPath(trace, start, goal), op
 
 def Heuristic_Bonus(a, current_node, goal):
     x1,y1 = current_node
@@ -457,7 +524,7 @@ def PGAME(graph,start,end,trace,open):
 def main():
     
     for mapId in range(2,3):
-        bonus_points, matrix = read_file()#f'../Maps/Maapp/{mapId}.txt')
+        bonus_points, matrix = read_file(f'../Maps/Maapp/{mapId}.txt')
         print(f'The height of the matrix: {len(matrix)}')
         print(f'The width of the matrix: {len(matrix[0])}')
 
@@ -490,24 +557,25 @@ def main():
          
         
         '''wayoutDFS,openDFS=dfs(graph, start, end)
-        visualize_maze(matrix,bonus_points,start,end,wayoutDFS)
+        visualize_maze(matrix, bonus_points, portals, start, end, wayoutDFS)
         print(f'DFS: Cost = {len(wayoutDFS)-1}\n')'''
           
 
-        wayoutBFS, openBFS=bfs(graph, start, end)
-        #visualize_maze(matrix,bonus_points,start,end,wayoutBFS)
+        wayoutBFS, openBFS =bfs(graph, start, end)
+        visualize_maze(matrix, bonus_points, portals, start, end, wayoutBFS)
         print(f'BFS: Cost = {len(wayoutBFS)-1}\n')
-        PGAME(graph,start,end,wayoutBFS,openBFS)
+
+        #PGAME(graph,start,end,wayoutBFS,openBFS)
         '''wayoutUCS=UCS(graph, start, end)
-        visualize_maze(matrix,bonus_points,start,end,wayoutUCS)
+        visualize_maze(matrix, bonus_points, portals, start, end, wayoutUCS)
         print(f'UCS: Cost = {len(wayoutUCS)-1}\n')
 
         wayoutGBFS1=GBFS_Heur1(graph, start, end)
-        visualize_maze(matrix,bonus_points,start,end,wayoutGBFS1)
+        visualize_maze(matrix, bonus_points, portals, start, end, wayoutGBFS1)
         print(f'GBFS1: Cost = {len(wayoutGBFS1)-1}\n')
 
         wayoutGBFS2=GBFS_Heur2(graph, start, end)
-        visualize_maze(matrix,bonus_points,start,end,wayoutGBFS2)
+        visualize_maze(matrix, bonus_points, portals, start, end, wayoutGBFS2)
         print(f'GBFS2: Cost = {len(wayoutGBFS2)-1}\n')'''
 
         #wayoutASTAR1, openASTAR1=a_star1(graph, start, end)
