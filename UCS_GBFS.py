@@ -133,9 +133,10 @@ def GBFS_Heur2(a, start, dest):
 # Create output folder
 script_path = os.path.realpath(__file__)
 dir_path = os.path.dirname(script_path)
-new_abs_path = os.path.join(dir_path, 'output')
-if not os.path.exists(new_abs_path):
-    os.mkdir(new_abs_path)
+print(dir_path)
+# new_abs_path = os.path.join(dir_path, 'output')
+# if not os.path.exists(new_abs_path):
+#     os.mkdir(new_abs_path)
 def main():
     for mapNo in range(nMaps):
         a, start, dest = readInput(f'input\\input{mapNo + 1}.txt')

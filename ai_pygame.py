@@ -25,7 +25,7 @@ KHAKI = (255,246,143)
 weight =500
 height = 500
 
-def visualize_maze(matrix, bonus, portal, start, end, route=None):
+def visualize_maze(matrix, bonus, portal, start, end, route=None, save_path=''):
     """
     Args:
       1. matrix: The matrix read from the input file,
@@ -82,7 +82,7 @@ def visualize_maze(matrix, bonus, portal, start, end, route=None):
         verticalalignment='center')
     plt.xticks([])
     plt.yticks([])
-    #plt.savefig('foo.png', bbox_inches='tight')
+    plt.savefig(f'{save_path}.png', bbox_inches='tight')
     plt.show()
 
     print(f'Starting point (x, y) = {start[0], start[1]}')
@@ -316,6 +316,7 @@ def GBFS_Heur1(a, start, dest):
     r_size, c_size = len(a), len(a[0])
     trace = [[None for i in range(c_size)] for j in range(r_size)]
     PQ = PriorityQueue(r_size * c_size)
+    op = []
     PQ.put((0, start))
     while not PQ.empty():
         p, u = PQ.get()
@@ -328,14 +329,16 @@ def GBFS_Heur1(a, start, dest):
             if a[v[0]][v[1]] == 1 or trace[v[0]][v[1]] != None: 
                 continue
             trace[v[0]][v[1]] = u
+            op.append(v)
             PQ.put((math.sqrt((v[0] - dest[0]) ** 2 + (v[1] - dest[1]) ** 2), v))
-    if trace[dest[0]][dest[1]] == None: return None
-    return createPath(trace, start, dest)
+    if trace[dest[0]][dest[1]] == None: return None, op
+    return createPath(trace, start, dest), op
 # Second Heuristic
 def GBFS_Heur2(a, start, dest):
     r_size, c_size = len(a), len(a[0])
     trace = [[None for i in range(c_size)] for j in range(r_size)]
     PQ = PriorityQueue(r_size * c_size)
+    op = []
     PQ.put((0, start))
     while not PQ.empty():
         p, u = PQ.get()
@@ -349,14 +352,16 @@ def GBFS_Heur2(a, start, dest):
                 continue
             trace[v[0]][v[1]] = u
             PQ.put((abs(v[0] - dest[0]) + abs(v[1] - dest[1]), v))
-    if trace[dest[0]][dest[1]] == None: return None
-    return createPath(trace, start, dest)
+            op.append(v)
+    if trace[dest[0]][dest[1]] == None: return None, op
+    return createPath(trace, start, dest), op
 
 def UCS(a, start, dest):
     r_size, c_size = len(a), len(a[0])
     d = [[oo for i in range(c_size)] for j in range(r_size)]
     trace = [[None for i in range(c_size)] for j in range(r_size)]
     d[start[0]][start[1]] = 0
+    op = []
     PQ = PriorityQueue(len(a) * len(a[0]))
     PQ.put((0, start))
     while not PQ.empty():
@@ -374,8 +379,9 @@ def UCS(a, start, dest):
                 trace[v[0]][v[1]] = u
                 d[v[0]][v[1]] = p + w
                 PQ.put((d[v[0]][v[1]], v))
-    if trace[dest[0]][dest[1]] == None: return None
-    return createPath(trace, start, dest)
+                op.append(v)
+    if trace[dest[0]][dest[1]] == None: return None, op
+    return createPath(trace, start, dest), op
 def BFS_teleport(a, start, goal):
   row = [-1, 0, 1, 0]
   col = [0, 1, 0, -1]
@@ -588,5 +594,5 @@ def main():
         #print(f'A_STAR2: Cost = {len(wayoutASTAR2)-1}\n')
         #PGAME(graph,start,end,wayoutASTAR2,openASTAR2)
 
-if __name__=="__main__":
-    main()
+# if __name__=="__main__":
+#     main()
