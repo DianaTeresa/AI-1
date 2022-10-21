@@ -106,6 +106,37 @@ def level_1(maps):
 
         mapID += 1
 
-level_1(getInput('input\\level_1'))
+def level_2(maps):
+    pass
+
+def advance(maps):
+    script_path = os.path.realpath(__file__)
+    dir_path = os.path.dirname(script_path)
+    new_abs_path = os.path.join(dir_path, f'output\\advance')
+    if not os.path.exists(new_abs_path):
+        os.mkdir(new_abs_path)
+    for i in range(len(maps)):
+        new_next_abs_path = os.path.join(new_abs_path, f'input{i + 1}')
+        if not os.path.exists(new_next_abs_path):
+            os.mkdir(new_next_abs_path)
+    mapID = 1
+    for obj in maps:
+        bonus_points, portals, matrix = obj
+        for i in range(len(matrix)):
+            for j in range(len(matrix[0])):
+                if matrix[i][j] == 'S':
+                    start = (i,j)
+                elif matrix[i][j] == ' ':
+                    if (i == 0) or (i == len(matrix) - 1) or (j == 0) or (j == len(matrix[0]) - 1):
+                        goal = (i,j)
+                else:
+                    continue     
+        wayout, open = ap.BFS_teleport(matrix, start, goal)
+        ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayout, f'output\\advance\\input{mapID}\\output{mapID}')
+
+        mapID += 1
+    pass
+
+advance(getInput('input\\advance'))
 
 
