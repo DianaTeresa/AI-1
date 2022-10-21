@@ -83,7 +83,7 @@ def visualize_maze(matrix, bonus, start, end, route=None):
     for _, point in enumerate(bonus):
         print(f'Bonus point at position (x, y) = {point[0], point[1]} with point {point[2]}')
 
-def read_file(file_name: str = 'maze.txt'):
+def read_file(file_name: str = 'bonus_map1.txt'):
     f=open(file_name,'r')
     n_bonus_points = int(next(f)[:-1])
     bonus_points = []
@@ -339,6 +339,62 @@ def UCS(a, start, dest):
     if trace[dest[0]][dest[1]] == None: return None
     return createPath(trace, start, dest)
 
+def Heuristic_Bonus(a, current_node, goal):
+    x1,y1 = current_node
+    x2,y2 = goal
+    h=abs(x1-x2)+abs(y1-y2)
+
+    for i in range(min(x1,x2), max(x1,x2)+1):
+        h+=2*a[i][y1]-a[i-1][y1]
+    for i in range(min(y1,y2), max(y1,y2)+1):
+        h+=2*a[x1][i]-a[x1][i+1]
+    return 
+
+def Check_Bonus(a,)
+
+def a_star(graph, start, end):
+    distances = {(start[0], start[1]): 0}
+    trace = {start:None}
+    visited = set()
+    goal = [end]
+
+    pq = PriorityQueue()
+    pq.put((0, (start[0], start[1])))
+
+    while not pq.empty():
+        _, node = pq.get()
+        cur_row, cur_col = node
+        if node == (goal[0][0],goal[0][1]):
+            goal.pop(0)
+        if goal==None:
+            break
+        
+
+        for i in range(0,4):
+            new_node = (cur_row + row[i], cur_col + col[i])
+            
+            if Is_Valid_Position(graph, new_node) and new_node not in visited:
+                old_distance = distances.get(new_node, float('inf'))
+                new_distance = distances[node] + weight
+                
+                if new_distance < old_distance:
+                    distances[new_node] = new_distance
+                    priority = new_distance + Heuristic_Bonus(a, new_node, goal[0])
+                    pq.put((priority, new_node))
+                    trace[new_node] = node
+        
+        visited.add(node)
+
+    path=[]
+    f=end
+    while trace[f]!=None:
+        path.append(trace[f])
+        f=trace[f]
+        
+    path.reverse()
+    path.append(end)
+    return path
+
 class Board:
     def _init_(self):
         self.board = []
@@ -401,7 +457,7 @@ def PGAME(graph,start,end,trace,open):
 def main():
     
     for mapId in range(2,3):
-        bonus_points, matrix = read_file(f'../Maps/Maapp/{mapId}.txt')
+        bonus_points, matrix = read_file()#f'../Maps/Maapp/{mapId}.txt')
         print(f'The height of the matrix: {len(matrix)}')
         print(f'The width of the matrix: {len(matrix[0])}')
 
