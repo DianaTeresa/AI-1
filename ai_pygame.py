@@ -92,13 +92,13 @@ def visualize_maze(matrix, bonus, portal, start, end, route=None):
         for _, point in enumerate(bonus):
             print(f'Bonus point at position (x, y) = {point[0], point[1]} with point {point[2]}')   
 
-def read_file(file_name: str = 'maze.txt'):
-    f=open(file_name,'r')
-    n_bonus_points = int(next(f)[:-1])
-    bonus_points = []
-    for i in range(n_bonus_points):
-        x, y, reward = map(int, next(f)[:-1].split(' '))
-        bonus_points.append((x, y, reward))
+# def read_file(file_name: str = 'maze.txt'):
+#     f=open(file_name,'r')
+#     n_bonus_points = int(next(f)[:-1])
+#     bonus_points = []
+#     for i in range(n_bonus_points):
+#         x, y, reward = map(int, next(f)[:-1].split(' '))
+#         bonus_points.append((x, y, reward))
 
 
 def read_file(file_name: str):
@@ -417,7 +417,8 @@ def Heuristic_Bonus(a, current_node, goal):
         h+=2*a[x1][i]-a[x1][i+1]
     return 
 
-def Check_Bonus(a,)
+def Check_Bonus(a,):
+    pass
 
 def a_star(graph, start, end):
     distances = {(start[0], start[1]): 0}
@@ -524,7 +525,7 @@ def PGAME(graph,start,end,trace,open):
 def main():
     
     for mapId in range(2,3):
-        bonus_points, matrix = read_file(f'../Maps/Maapp/{mapId}.txt')
+        bonus_points, portals, matrix = read_file(f'../Maps/Maapp/{mapId}.txt')
         print(f'The height of the matrix: {len(matrix)}')
         print(f'The width of the matrix: {len(matrix[0])}')
 
