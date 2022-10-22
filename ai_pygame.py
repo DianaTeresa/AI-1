@@ -415,27 +415,27 @@ def BFS_teleport(a, start, goal):
 def Heuristic_Bonus(a, current_node, goal):
     x1,y1 = current_node
     x2,y2 = goal
-    h=abs(x1-x2)+abs(y1-y2)
+    h = abs(x1-x2)+abs(y1-y2)
 
     for i in range(min(x1,x2), max(x1,x2)+1):
-        h+=2*a[i][y1]-a[i-1][y1]
+        h += 2*a[i][y1]-a[i-1][y1]
     for i in range(min(y1,y2), max(y1,y2)+1):
-        h+=2*a[x1][i]-a[x1][i+1]
+        h += 2*a[x1][i]-a[x1][i+1]
     return 
 
-def Check_Bonus(a, bonus_point, u, end):
-    Min=1000000
-    Mini=None
+def Check_Bonus(a, bonus_points, u, end):
+    Min = oo
+    Min_i = None
     tmp = Heuristic_Bonus(a,u,(i[0],i[1]))
     tmp1 = (Heuristic_Bonus(a,u,end) - Heuristic_Bonus(a,(i[0],i[1]), end) + tmp)
-    for i in bonus_point:
+    for i in bonus_points:
         if (2*tmp < abs(i[2])) | (tmp1 < abs(i[2])):
             if Min < min(tmp,tmp1):
                 Min = min(tmp,tmp1)
-                Mini=i
-    return i
+                Min_i=i
+    return Min_i
 
-def a_star(graph, start, end):
+def a_star(graph, start, end, bonus_points):
     distances = {(start[0], start[1]): 0}
     trace = {start:None}
     visited = set()
@@ -452,7 +452,7 @@ def a_star(graph, start, end):
         if goal==None:
             break
         
-        tmp_goal = Check_Bonus(graph, bonus_point, node, goal[0])
+        tmp_goal = Check_Bonus(graph, bonus_points, node, goal[0])
         if tmp_goal!=None:
             goal.insert(0, tmp_goal)
 
@@ -471,11 +471,11 @@ def a_star(graph, start, end):
         
         visited.add(node)
 
-    path=[]
-    f=end
-    while trace[f]!=None:
+    path = []
+    f = end
+    while trace[f] != None:
         path.append(trace[f])
-        f=trace[f]
+        f = trace[f]
         
     path.reverse()
     path.append(end)
