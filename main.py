@@ -96,9 +96,11 @@ def level_2(maps):
                         goal = (i,j)
                 else:
                     continue 
-        wayout, open = ap.bonus_astar(matrix, bonus_points, start, goal)
+        wayout, openSet = ap.bonus_astar(matrix, bonus_points, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayout, f'output\\level_2\\input{mapID}\\output{mapID}')
-
+        with open(f'output\\level_2\\input{mapID}\\output{mapID}.txt', 'w') as file:
+            file.write(f'Cost: {ap.compute_cost(wayout, bonus_points)}')
+            file.close()
         mapID += 1
     pass
 
@@ -126,7 +128,7 @@ def advance(maps):
                     continue     
         wayout, open = a.BFS_teleport(matrix, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayout, f'output\\advance\\input{mapID}\\output{mapID}')
-
+       
         mapID += 1
     pass
 

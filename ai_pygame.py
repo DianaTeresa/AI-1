@@ -1,6 +1,8 @@
 
 #from curses import KEY_ENTER
+from inspect import trace
 import os
+from venv import create
 import matplotlib.pyplot as plt
 import copy
 from heapq import heappop
@@ -84,12 +86,12 @@ def visualize_maze(matrix, bonus, portal, start, end, route=None, save_path=''):
     plt.savefig(f'{save_path}.png', bbox_inches='tight')
     plt.show()
 
-    print(f'Starting point (x, y) = {start[0], start[1]}')
-    print(f'Ending point (x, y) = {end[0], end[1]}')
+    # print(f'Starting point (x, y) = {start[0], start[1]}')
+    # print(f'Ending point (x, y) = {end[0], end[1]}')
     
-    if bonus:
-        for _, point in enumerate(bonus):
-            print(f'Bonus point at position (x, y) = {point[0], point[1]} with point {point[2]}')   
+    # if bonus:
+    #     for _, point in enumerate(bonus):
+    #         print(f'Bonus point at position (x, y) = {point[0], point[1]} with point {point[2]}')   
 
 # def read_file(file_name: str = 'maze.txt'):
 #     f=open(file_name,'r')
@@ -426,28 +428,32 @@ def BFS_teleport(a, start, goal):
 #     return 0
 
 # def Check_Bonus(a, bonus_points, u, end):
-#     Min = 0
+#     Min = oo
 #     Min_i = None
-#     for i in bonus_points:
-#         tmp = Heuristic_Bonus(u,(i[0],i[1]))
-#         tmp1 = Heuristic_Bonus(u,end)
-#         tmp2 = Heuristic_Bonus((i[0],i[1]),end)
-#         if Is_Middle(a, end, u, i) == 1:
-#             if tmp*2 < abs(i[2]):
-#                 if Min < abs(i[2])-tmp*2:
-#                     Min = abs(i[2])-tmp*2
-#                     Min_i=i
-#         else:
-#             if tmp1>tmp2:
-#                 if tmp<=abs(i[2]):
-#                     if Min < abs(i[2]) - tmp:
-#                         Min = abs(i[2]) - tmp
-#                         Min_i=i
+#     pos = None
+#     for j in range(len(bonus_points)):
+#         i = bonus_points[j]
+#         if i[3] == True:
+#             tmp = Heuristic_Bonus(u,(i[0],i[1]))
+#             tmp1 = Heuristic_Bonus(u,end)
+#             tmp2 = Heuristic_Bonus((i[0],i[1]),end)
+#             if Is_Middle(a, end, u, i) == 1:
+#                 if tmp*2 < abs(i[2]):
+#                     if Min < abs(i[2])-tmp*2:
+#                         Min = abs(i[2])-tmp*2
+#                         Min_i, pos = i, j
 #             else:
-#                 if abs(tmp1-tmp2)+tmp < abs(i[2]):
-#                     if Min < abs(i[2])- abs(tmp1-tmp2) - tmp:
-#                         Min = abs(i[2])- abs(tmp1-tmp2) - tmp
-#                         Min_i=i
+#                 if tmp1>tmp2:
+#                     if tmp<=abs(i[2]):
+#                         if Min < abs(i[2]) - tmp:
+#                             Min = abs(i[2]) - tmp
+#                             Min_i, pos = i, j
+#                 else:
+#                     if abs(tmp1-tmp2)+tmp < abs(i[2]):
+#                         if Min < abs(i[2])- abs(tmp1-tmp2) - tmp:
+#                             Min = abs(i[2])- abs(tmp1-tmp2) - tmp
+#                             Min_i, pos = i, j
+#     bonus_points[pos] = (Min_i[0], Min_i[1], Min_i[2], False)
 #     return Min_i
 
 # def Get_Bonus(new_node, bonus_points):
@@ -455,14 +461,14 @@ def BFS_teleport(a, start, goal):
 #         if (i[0],i[1]) == new_node:
 #             return i[2]
 
-# def a_star(graph, start, end, bonus_points):
+# def a_star_bonus(graph, bonus_points, start, dest):
 #     distances = {(start[0], start[1]): 0}
-#     trace = {start:None}
 #     visited = set()
+#     trace = {start:None}
 #     goal = []
-#     goal.append(end)
-#     open=[]
-
+#     goal.append(dest)
+#     open = []
+#     bonus_points = [(x[0], x[1], x[2], True) for x in bonus_points]
 
 #     pq = PriorityQueue()
 #     pq.put((0, (start[0], start[1])))
@@ -472,11 +478,11 @@ def BFS_teleport(a, start, goal):
 #         cur_row, cur_col = node
 #         if node == (goal[0][0],goal[0][1]):
 #             goal.pop(0)
-#         if goal==[]:
+#         if goal == []:
 #             break
         
 #         tmp_goal = Check_Bonus(graph, bonus_points, node, goal[0])
-#         if tmp_goal!=None:
+#         if tmp_goal != None:
 #             goal.insert(0, (tmp_goal[0],tmp_goal[1]))
 
 #         for i in range(0,4):
@@ -495,18 +501,18 @@ def BFS_teleport(a, start, goal):
 #                     priority = new_distance + Heuristic_Bonus(new_node, goal[0])
 #                     pq.put((priority, new_node))
 #                     trace[new_node] = node
-        
-#         visited.add(node)
+
+#                 visited.add(new_node)
 
 #     path = []
-#     f = end
-#     while trace[f] != None:
-#         path.append(trace[f])
+#     f = dest
+#     while f != None:
+#         path.append(f)
 #         f = trace[f]
         
 #     path.reverse()
-#     path.append(end)
 #     return path, open
+
 def nearest_bonus_point(u, bonus_points):
     res = None
     for v in bonus_points:
@@ -514,13 +520,27 @@ def nearest_bonus_point(u, bonus_points):
         res = d if res is None else min(res, d)
     return res
 
+def compute_cost(path, bonus_points):
+    cost, cnt = 0, 0
+    for u in path:
+        for v in bonus_points:
+            if u[0] == v[0] and u[1] == v[1]:
+                cost += v[2]
+                cnt += 1
+                break
+    return cost + len(path) - cnt            
+
 def bonus_astar(matrix, bonus_points, start, goal):
     r_size, c_size = len(matrix), len(matrix[0])
+    for u in bonus_points:
+        matrix[u[0]][u[1]] = u[2]
+
     d = [[2 * oo for i in range(c_size)] for j in range(r_size)]
     trace = [[None for i in range(c_size)] for j in range(r_size)]
     d[start[0]][start[1]] = 0
     op = []
     PQ = PriorityQueue(len(matrix) * len(matrix[0]))
+
     PQ.put((0, start))
     while not PQ.empty():
         _, u = PQ.get()
@@ -533,48 +553,47 @@ def bonus_astar(matrix, bonus_points, start, goal):
             if matrix[v[0]][v[1]] == 'x' or matrix[v[0]][v[1]] == 'S' or trace[v[0]][v[1]] != None: 
                 continue
             w = 1 if matrix[v[0]][v[1]] == ' ' else matrix[v[0]][v[1]]
-            f = d[u[0]][u[1]] + w + abs(goal[0] - v[0]) + abs(goal[1] - v[1]) + nearest_bonus_point(v, bonus_points)
+            f = d[u[0]][u[1]] + w + nearest_bonus_point(v, bonus_points)
             if d[v[0]][v[1]] > f:
                 trace[v[0]][v[1]] = u
                 d[v[0]][v[1]] = d[u[0]][u[1]] + w
                 PQ.put((f, v))
                 op.append(v)
+
     if trace[goal[0]][goal[1]] == None: return None, op
     return createPath(trace, start, goal), op
 
-def greedyValue(u, bonus_points):
-    res, p = None, None
-    for v in bonus_points:
-        d = abs(u[0] - v[0]) + abs(u[1] - v[1])
-        if res is None:
-            res, p = d, v
-        elif res > d:
-            res, p = d, v
-    return res, p
+def Relax(d, trace, u, v, w):
+    res = d[u[0]][u[1]] < oo and d[v[0]][v[1]] > d[u[0]][u[1]] + w
+    if res:
+        d[v[0]][v[1]] = d[u[0]][u[1]] + w
+        trace[v[0]][v[1]] = u
+    return d, trace, res
 
-def bonus_GBFS(matrix, bonus_points, start, goal):
+def Bellman_Ford(matrix, bonus_points, start, goal):
     r_size, c_size = len(matrix), len(matrix[0])
+    d = [[oo for i in range(c_size)] for j in range(r_size)]
     trace = [[None for i in range(c_size)] for j in range(r_size)]
-    op = []
-    PQ = PriorityQueue(len(matrix) * len(matrix[0]))
-    PQ.put((0, start))
-    while not PQ.empty():
-        _, u = PQ.get()
-        if (u == goal):
-            break
-        for k in range(4):
-            v = (u[0] + row[k], u[1] + col[k])
-            if v[0] < 0 or v[0] > r_size or v[1] < 0 or v[1] > c_size:
-                continue
-            if matrix[v[0]][v[1]] == 'x' or matrix[v[0]][v[1]] == 'S' or trace[v[0]][v[1]] != None: 
-                continue
-            trace[v[0]][v[1]] = u
-            g, w = greedyValue(v, bonus_points)
-            f = g + matrix[w[0]][w[1]]
-            PQ.put((f, v))
-            op.append(v)
-    if trace[goal[0]][goal[1]] == None: return None, op
-    return createPath(trace, start, goal), op
+    d[start[0]][start[1]] = 0 
+    for u in bonus_points:
+        matrix[u[0]][u[1]] = u[2]
+    for cntLoop in range(r_size * c_size - 1):
+        stop = True
+        for i in range(r_size):
+            for j in range(c_size):
+                if matrix[i][j] != 'x':
+                    u = (i, j)
+                    for k in range(4):
+                        v = (u[0] + row[k], u[1] + col[k])
+                        if v[0] < 0 or v[0] > r_size or v[1] < 0 or v[1] > c_size or matrix[v[0]][v[1]] == 'x' or v == trace[u[0]][u[1]]:
+                            continue
+                        w = 1 if type(matrix[v[0]][v[1]]) == str else matrix[v[0]][v[1]]
+                        d, trace, relax = Relax(d, trace, u, v, w)
+                        if relax: stop = False
+        if stop: break
+    if trace[goal[0]][goal[1]] is None: return None
+    return createPath(trace, start, goal)
+                        
 class Board:
     def _init_(self):
         self.board = []
