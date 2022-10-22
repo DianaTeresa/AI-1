@@ -12,7 +12,6 @@ from pyparsing import White
 import sys
 row = [-1, 0, 1, 0]
 col = [0, 1, 0, -1]
-weight =1 
 oo = 100000000
 RED =(255,0,0)
 WHITE = (255,255,255)
