@@ -208,7 +208,7 @@ def Is_Valid_Position(graph, node):
         if  node[0] < len(graph):
             if node[1] >=0:
                 if node[1] <len(graph[0]):
-                    return graph[node[0]][node[1]] == 0
+                    return graph[node[0]][node[1]] == ' '
     return False
 
 def Heuristic_1(current_node, goal):
@@ -412,34 +412,58 @@ def BFS_teleport(a, start, goal):
   if trace[goal[0]][goal[1]] == None: return None
   return createPath(trace, start, goal), op
 
-def Heuristic_Bonus(a, current_node, goal):
+def Heuristic_Bonus(current_node, goal):
     x1,y1 = current_node
     x2,y2 = goal
-    h = abs(x1-x2)+abs(y1-y2)
+    return abs(x1-x2)+abs(y1-y2)
 
-    for i in range(min(x1,x2), max(x1,x2)+1):
-        h += 2*a[i][y1]-a[i-1][y1]
-    for i in range(min(y1,y2), max(y1,y2)+1):
-        h += 2*a[x1][i]-a[x1][i+1]
-    return 
+def Is_Middle(graph, a,b,c):
+    if a[0]==0 or a[0]==len(graph):
+        if abs(a[0]-b[0]) < abs(a[0]-c[0]):
+            return 1
+    if a[1]==0 or a[1] == len(graph[0]):
+        if abs(a[1]-b[1]) < abs(a[1]-c[1]):
+            return 1
+    return 0
 
 def Check_Bonus(a, bonus_points, u, end):
-    Min = oo
+    Min = 0
     Min_i = None
-    tmp = Heuristic_Bonus(a,u,(i[0],i[1]))
-    tmp1 = (Heuristic_Bonus(a,u,end) - Heuristic_Bonus(a,(i[0],i[1]), end) + tmp)
     for i in bonus_points:
-        if (2*tmp < abs(i[2])) | (tmp1 < abs(i[2])):
-            if Min < min(tmp,tmp1):
-                Min = min(tmp,tmp1)
-                Min_i=i
+        tmp = Heuristic_Bonus(u,(i[0],i[1]))
+        tmp1 = Heuristic_Bonus(u,end)
+        tmp2 = Heuristic_Bonus((i[0],i[1]),end)
+        if Is_Middle(a, end, u, i) == 1:
+            if tmp*2 < abs(i[2]):
+                if Min < abs(i[2])-tmp*2:
+                    Min = abs(i[2])-tmp*2
+                    Min_i=i
+        else:
+            if tmp1>tmp2:
+                if tmp<=abs(i[2]):
+                    if Min < abs(i[2]) - tmp:
+                        Min = abs(i[2]) - tmp
+                        Min_i=i
+            else:
+                if abs(tmp1-tmp2)+tmp < abs(i[2]):
+                    if Min < abs(i[2])- abs(tmp1-tmp2) - tmp:
+                        Min = abs(i[2])- abs(tmp1-tmp2) - tmp
+                        Min_i=i
     return Min_i
+
+def Get_Bonus(new_node, bonus_points):
+    for i in bonus_points:
+        if (i[0],i[1]) == new_node:
+            return i[2]
 
 def a_star(graph, start, end, bonus_points):
     distances = {(start[0], start[1]): 0}
     trace = {start:None}
     visited = set()
-    goal = [end]
+    goal = []
+    goal.append(end)
+    open=[]
+
 
     pq = PriorityQueue()
     pq.put((0, (start[0], start[1])))
@@ -449,23 +473,27 @@ def a_star(graph, start, end, bonus_points):
         cur_row, cur_col = node
         if node == (goal[0][0],goal[0][1]):
             goal.pop(0)
-        if goal==None:
+        if goal==[]:
             break
         
         tmp_goal = Check_Bonus(graph, bonus_points, node, goal[0])
         if tmp_goal!=None:
-            goal.insert(0, tmp_goal)
+            goal.insert(0, (tmp_goal[0],tmp_goal[1]))
 
         for i in range(0,4):
             new_node = (cur_row + row[i], cur_col + col[i])
             
             if Is_Valid_Position(graph, new_node) and new_node not in visited:
                 old_distance = distances.get(new_node, float('inf'))
-                new_distance = distances[node] + weight
+                if (graph[new_node[0]][new_node[1]]=='+'):
+                    new_distance = distances[node] + weight + Get_Bonus(new_node, bonus_points)
+                else:
+                    new_distance = distances[node] + weight
+                open.append(new_node)
                 
                 if new_distance < old_distance:
                     distances[new_node] = new_distance
-                    priority = new_distance + Heuristic_Bonus(graph, new_node, goal[0])
+                    priority = new_distance + Heuristic_Bonus(new_node, goal[0])
                     pq.put((priority, new_node))
                     trace[new_node] = node
         
@@ -479,7 +507,7 @@ def a_star(graph, start, end, bonus_points):
         
     path.reverse()
     path.append(end)
-    return path
+    return path, open
 
 class Board:
     def _init_(self):
