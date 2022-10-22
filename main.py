@@ -1,5 +1,6 @@
 import os
 import ai_pygame as ap
+import ai as a
 
 def getInput(path):
     dir = os.scandir(path)
@@ -123,7 +124,7 @@ def advance(maps):
                         goal = (i,j)
                 else:
                     continue     
-        wayout, open = ap.BFS_teleport(matrix, start, goal)
+        wayout, open = a.BFS_teleport(matrix, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayout, f'output\\advance\\input{mapID}\\output{mapID}')
 
         mapID += 1
