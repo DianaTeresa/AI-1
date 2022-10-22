@@ -73,39 +73,6 @@ def level_1(maps):
 
         mapID += 1
 
-
-    script_path = os.path.realpath(__file__)
-    dir_path = os.path.dirname(script_path)
-    new_abs_path = os.path.join(dir_path, 'output\\level_1')
-    if not os.path.exists(new_abs_path):
-        os.mkdir(new_abs_path)
-    mapID = 1
-    for obj in maps:
-        bonus_points, portals, matrix = obj
-        for i in range(len(matrix)):
-            for j in range(len(matrix[0])):
-                if matrix[i][j] == 'S':
-                    start = (i,j)
-                elif matrix[i][j] == ' ':
-                    if (i == 0) or (i == len(matrix) - 1) or (j == 0) or (j == len(matrix[0]) - 1):
-                        goal = (i,j)
-                else:
-                    continue
-        graph = []
-        for i in range(len(matrix)):
-            adj = []
-            for j in range(len(matrix[0])):
-                if matrix[i][j] != 'x':
-                    adj.append(0)
-                else:
-                    adj.append(1)
-            graph.append(adj)
-        wayoutDFS, openDFS = ap.dfs(graph, start, goal)
-        #ap.PGAME(graph, start, goal, wayoutDFS, openDFS)
-        ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutDFS, f'output\\level_1\\output{mapID}')
-
-        mapID += 1
-
 def level_2(maps):
     script_path = os.path.realpath(__file__)
     dir_path = os.path.dirname(script_path)
