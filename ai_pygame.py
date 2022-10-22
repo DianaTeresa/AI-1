@@ -412,103 +412,170 @@ def BFS_teleport(a, start, goal):
   if trace[goal[0]][goal[1]] == None: return None
   return createPath(trace, start, goal), op
 
-def Heuristic_Bonus(current_node, goal):
-    x1,y1 = current_node
-    x2,y2 = goal
-    return abs(x1-x2)+abs(y1-y2)
+# def Heuristic_Bonus(current_node, goal):
+#     x1,y1 = current_node
+#     x2,y2 = goal
+#     return abs(x1-x2)+abs(y1-y2)
 
-def Is_Middle(graph, a,b,c):
-    if a[0]==0 or a[0]==len(graph):
-        if abs(a[0]-b[0]) < abs(a[0]-c[0]):
-            return 1
-    if a[1]==0 or a[1] == len(graph[0]):
-        if abs(a[1]-b[1]) < abs(a[1]-c[1]):
-            return 1
-    return 0
+# def Is_Middle(graph, a,b,c):
+#     if a[0]==0 or a[0]==len(graph):
+#         if abs(a[0]-b[0]) < abs(a[0]-c[0]):
+#             return 1
+#     if a[1]==0 or a[1] == len(graph[0]):
+#         if abs(a[1]-b[1]) < abs(a[1]-c[1]):
+#             return 1
+#     return 0
 
-def Check_Bonus(a, bonus_points, u, end):
-    Min = 0
-    Min_i = None
-    for i in bonus_points:
-        tmp = Heuristic_Bonus(u,(i[0],i[1]))
-        tmp1 = Heuristic_Bonus(u,end)
-        tmp2 = Heuristic_Bonus((i[0],i[1]),end)
-        if Is_Middle(a, end, u, i) == 1:
-            if tmp*2 < abs(i[2]):
-                if Min < abs(i[2])-tmp*2:
-                    Min = abs(i[2])-tmp*2
-                    Min_i=i
-        else:
-            if tmp1>tmp2:
-                if tmp<=abs(i[2]):
-                    if Min < abs(i[2]) - tmp:
-                        Min = abs(i[2]) - tmp
-                        Min_i=i
-            else:
-                if abs(tmp1-tmp2)+tmp < abs(i[2]):
-                    if Min < abs(i[2])- abs(tmp1-tmp2) - tmp:
-                        Min = abs(i[2])- abs(tmp1-tmp2) - tmp
-                        Min_i=i
-    return Min_i
+# def Check_Bonus(a, bonus_points, u, end):
+#     Min = 0
+#     Min_i = None
+#     for i in bonus_points:
+#         tmp = Heuristic_Bonus(u,(i[0],i[1]))
+#         tmp1 = Heuristic_Bonus(u,end)
+#         tmp2 = Heuristic_Bonus((i[0],i[1]),end)
+#         if Is_Middle(a, end, u, i) == 1:
+#             if tmp*2 < abs(i[2]):
+#                 if Min < abs(i[2])-tmp*2:
+#                     Min = abs(i[2])-tmp*2
+#                     Min_i=i
+#         else:
+#             if tmp1>tmp2:
+#                 if tmp<=abs(i[2]):
+#                     if Min < abs(i[2]) - tmp:
+#                         Min = abs(i[2]) - tmp
+#                         Min_i=i
+#             else:
+#                 if abs(tmp1-tmp2)+tmp < abs(i[2]):
+#                     if Min < abs(i[2])- abs(tmp1-tmp2) - tmp:
+#                         Min = abs(i[2])- abs(tmp1-tmp2) - tmp
+#                         Min_i=i
+#     return Min_i
 
-def Get_Bonus(new_node, bonus_points):
-    for i in bonus_points:
-        if (i[0],i[1]) == new_node:
-            return i[2]
+# def Get_Bonus(new_node, bonus_points):
+#     for i in bonus_points:
+#         if (i[0],i[1]) == new_node:
+#             return i[2]
 
-def a_star(graph, start, end, bonus_points):
-    distances = {(start[0], start[1]): 0}
-    trace = {start:None}
-    visited = set()
-    goal = []
-    goal.append(end)
-    open=[]
+# def a_star(graph, start, end, bonus_points):
+#     distances = {(start[0], start[1]): 0}
+#     trace = {start:None}
+#     visited = set()
+#     goal = []
+#     goal.append(end)
+#     open=[]
 
 
-    pq = PriorityQueue()
-    pq.put((0, (start[0], start[1])))
+#     pq = PriorityQueue()
+#     pq.put((0, (start[0], start[1])))
 
-    while not pq.empty():
-        _, node = pq.get()
-        cur_row, cur_col = node
-        if node == (goal[0][0],goal[0][1]):
-            goal.pop(0)
-        if goal==[]:
-            break
+#     while not pq.empty():
+#         _, node = pq.get()
+#         cur_row, cur_col = node
+#         if node == (goal[0][0],goal[0][1]):
+#             goal.pop(0)
+#         if goal==[]:
+#             break
         
-        tmp_goal = Check_Bonus(graph, bonus_points, node, goal[0])
-        if tmp_goal!=None:
-            goal.insert(0, (tmp_goal[0],tmp_goal[1]))
+#         tmp_goal = Check_Bonus(graph, bonus_points, node, goal[0])
+#         if tmp_goal!=None:
+#             goal.insert(0, (tmp_goal[0],tmp_goal[1]))
 
-        for i in range(0,4):
-            new_node = (cur_row + row[i], cur_col + col[i])
+#         for i in range(0,4):
+#             new_node = (cur_row + row[i], cur_col + col[i])
             
-            if Is_Valid_Position(graph, new_node) and new_node not in visited:
-                old_distance = distances.get(new_node, float('inf'))
-                if (graph[new_node[0]][new_node[1]]=='+'):
-                    new_distance = distances[node] + weight + Get_Bonus(new_node, bonus_points)
-                else:
-                    new_distance = distances[node] + weight
-                open.append(new_node)
+#             if Is_Valid_Position(graph, new_node) and new_node not in visited:
+#                 old_distance = distances.get(new_node, float('inf'))
+#                 if (graph[new_node[0]][new_node[1]]=='+'):
+#                     new_distance = distances[node] + weight + Get_Bonus(new_node, bonus_points)
+#                 else:
+#                     new_distance = distances[node] + weight
+#                 open.append(new_node)
                 
-                if new_distance < old_distance:
-                    distances[new_node] = new_distance
-                    priority = new_distance + Heuristic_Bonus(new_node, goal[0])
-                    pq.put((priority, new_node))
-                    trace[new_node] = node
+#                 if new_distance < old_distance:
+#                     distances[new_node] = new_distance
+#                     priority = new_distance + Heuristic_Bonus(new_node, goal[0])
+#                     pq.put((priority, new_node))
+#                     trace[new_node] = node
         
-        visited.add(node)
+#         visited.add(node)
 
-    path = []
-    f = end
-    while trace[f] != None:
-        path.append(trace[f])
-        f = trace[f]
+#     path = []
+#     f = end
+#     while trace[f] != None:
+#         path.append(trace[f])
+#         f = trace[f]
         
-    path.reverse()
-    path.append(end)
-    return path, open
+#     path.reverse()
+#     path.append(end)
+#     return path, open
+def nearest_bonus_point(u, bonus_points):
+    res = None
+    for v in bonus_points:
+        d = abs(u[0] - v[0]) + abs(u[1] - v[1])
+        res = d if res is None else min(res, d)
+    return res
 
+def bonus_astar(matrix, bonus_points, start, goal):
+    r_size, c_size = len(matrix), len(matrix[0])
+    d = [[2 * oo for i in range(c_size)] for j in range(r_size)]
+    trace = [[None for i in range(c_size)] for j in range(r_size)]
+    d[start[0]][start[1]] = 0
+    op = []
+    PQ = PriorityQueue(len(matrix) * len(matrix[0]))
+    PQ.put((0, start))
+    while not PQ.empty():
+        _, u = PQ.get()
+        if (u == goal):
+            break
+        for k in range(4):
+            v = (u[0] + row[k], u[1] + col[k])
+            if v[0] < 0 or v[0] > r_size or v[1] < 0 or v[1] > c_size:
+                continue
+            if matrix[v[0]][v[1]] == 'x' or matrix[v[0]][v[1]] == 'S' or trace[v[0]][v[1]] != None: 
+                continue
+            w = 1 if matrix[v[0]][v[1]] == ' ' else matrix[v[0]][v[1]]
+            f = d[u[0]][u[1]] + w + abs(goal[0] - v[0]) + abs(goal[1] - v[1]) + nearest_bonus_point(v, bonus_points)
+            if d[v[0]][v[1]] > f:
+                trace[v[0]][v[1]] = u
+                d[v[0]][v[1]] = d[u[0]][u[1]] + w
+                PQ.put((f, v))
+                op.append(v)
+    if trace[goal[0]][goal[1]] == None: return None, op
+    return createPath(trace, start, goal), op
+
+def greedyValue(u, bonus_points):
+    res, p = None, None
+    for v in bonus_points:
+        d = abs(u[0] - v[0]) + abs(u[1] - v[1])
+        if res is None:
+            res, p = d, v
+        elif res > d:
+            res, p = d, v
+    return res, p
+
+def bonus_GBFS(matrix, bonus_points, start, goal):
+    r_size, c_size = len(matrix), len(matrix[0])
+    trace = [[None for i in range(c_size)] for j in range(r_size)]
+    op = []
+    PQ = PriorityQueue(len(matrix) * len(matrix[0]))
+    PQ.put((0, start))
+    while not PQ.empty():
+        _, u = PQ.get()
+        if (u == goal):
+            break
+        for k in range(4):
+            v = (u[0] + row[k], u[1] + col[k])
+            if v[0] < 0 or v[0] > r_size or v[1] < 0 or v[1] > c_size:
+                continue
+            if matrix[v[0]][v[1]] == 'x' or matrix[v[0]][v[1]] == 'S' or trace[v[0]][v[1]] != None: 
+                continue
+            trace[v[0]][v[1]] = u
+            g, w = greedyValue(v, bonus_points)
+            f = g + matrix[w[0]][w[1]]
+            PQ.put((f, v))
+            op.append(v)
+    if trace[goal[0]][goal[1]] == None: return None, op
+    return createPath(trace, start, goal), op
 class Board:
     def _init_(self):
         self.board = []

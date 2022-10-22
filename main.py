@@ -95,7 +95,7 @@ def level_2(maps):
                         goal = (i,j)
                 else:
                     continue 
-        wayout, open = ap.a_star(matrix, start, goal, bonus_points)
+        wayout, open = ap.bonus_astar(matrix, bonus_points, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayout, f'output\\level_2\\input{mapID}\\output{mapID}')
 
         mapID += 1
