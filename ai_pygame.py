@@ -423,8 +423,17 @@ def Heuristic_Bonus(a, current_node, goal):
         h+=2*a[x1][i]-a[x1][i+1]
     return 
 
-def Check_Bonus(a,):
-    pass
+def Check_Bonus(a, bonus_point, u, end):
+    Min=1000000
+    Mini=None
+    tmp = Heuristic_Bonus(a,u,(i[0],i[1]))
+    tmp1 = (Heuristic_Bonus(a,u,end) - Heuristic_Bonus(a,(i[0],i[1]), end) + tmp)
+    for i in bonus_point:
+        if (2*tmp < abs(i[2])) | (tmp1 < abs(i[2])):
+            if Min < min(tmp,tmp1):
+                Min = min(tmp,tmp1)
+                Mini=i
+    return i
 
 def a_star(graph, start, end):
     distances = {(start[0], start[1]): 0}
@@ -443,6 +452,9 @@ def a_star(graph, start, end):
         if goal==None:
             break
         
+        tmp_goal = Check_Bonus(graph, bonus_point, node, goal[0])
+        if tmp_goal!=None:
+            goal.insert(0, tmp_goal)
 
         for i in range(0,4):
             new_node = (cur_row + row[i], cur_col + col[i])
@@ -453,7 +465,7 @@ def a_star(graph, start, end):
                 
                 if new_distance < old_distance:
                     distances[new_node] = new_distance
-                    priority = new_distance + Heuristic_Bonus(a, new_node, goal[0])
+                    priority = new_distance + Heuristic_Bonus(graph, new_node, goal[0])
                     pq.put((priority, new_node))
                     trace[new_node] = node
         
