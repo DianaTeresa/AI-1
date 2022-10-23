@@ -7,7 +7,6 @@ def getInput(path):
     dir_path = os.path.dirname(script_path)
     path = os.path.join(dir_path, path)
     dir = os.scandir(path)
-    print(path)
     maps, nMaps = [], 0
     for entry in dir:
         if entry.is_file():
