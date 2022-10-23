@@ -17,15 +17,20 @@ def level_1(maps):
     algos = {'dfs', 'bfs', 'ucs', 'gbfs_heuristic_1', 'gbfs_heuristic_2', 'astar_heuristic_1', 'astar_heuristic_2'}
     script_path = os.path.realpath(__file__)
     dir_path = os.path.dirname(script_path)
-    new_abs_path = os.path.join(dir_path, f'output\\level_1')
+    new_abs_path = os.path.join(dir_path, 'output')
+    if not os.path.exists(new_abs_path):
+        os.mkdir(new_abs_path)
+    new_abs_path = os.path.join(new_abs_path, 'level_1')
     if not os.path.exists(new_abs_path):
         os.mkdir(new_abs_path)
     for i in range(len(maps)):
-        new_next_abs_path = os.path.join(new_abs_path, f'input{i + 1}')
+        p = f'input{i + 1}'
+        new_next_abs_path = os.path.join(new_abs_path, p)
         if not os.path.exists(new_next_abs_path):
             os.mkdir(new_next_abs_path)
         for algo in algos:
-            alg_abs_path = os.path.join(new_next_abs_path, f'{algo}')
+            p = f'{algo}'
+            alg_abs_path = os.path.join(new_next_abs_path, p)
             if not os.path.exists(alg_abs_path):
                 os.mkdir(alg_abs_path)
     mapID = 1
@@ -104,11 +109,15 @@ def level_1(maps):
 def level_2(maps):
     script_path = os.path.realpath(__file__)
     dir_path = os.path.dirname(script_path)
-    new_abs_path = os.path.join(dir_path, f'output\\level_2')
+    new_abs_path = os.path.join(dir_path, 'output')
+    if not os.path.exists(new_abs_path):
+        os.mkdir(new_abs_path)
+    new_abs_path = os.path.join(new_abs_path, 'level_2')
     if not os.path.exists(new_abs_path):
         os.mkdir(new_abs_path)
     for i in range(len(maps)):
-        new_next_abs_path = os.path.join(new_abs_path, f'input{i + 1}')
+        p = f'input{i + 1}'
+        new_next_abs_path = os.path.join(new_abs_path, p)
         if not os.path.exists(new_next_abs_path):
             os.mkdir(new_next_abs_path)
     mapID = 1
@@ -145,11 +154,15 @@ def level_2(maps):
 def advance(maps):
     script_path = os.path.realpath(__file__)
     dir_path = os.path.dirname(script_path)
-    new_abs_path = os.path.join(dir_path, f'output\\advance')
+    new_abs_path = os.path.join(dir_path, 'output')
+    if not os.path.exists(new_abs_path):
+        os.mkdir(new_abs_path)
+    new_abs_path = os.path.join(new_abs_path, 'advance')
     if not os.path.exists(new_abs_path):
         os.mkdir(new_abs_path)
     for i in range(len(maps)):
-        new_next_abs_path = os.path.join(new_abs_path, f'input{i + 1}')
+        p = f'input{i + 1}'
+        new_next_abs_path = os.path.join(new_abs_path, p)
         if not os.path.exists(new_next_abs_path):
             os.mkdir(new_next_abs_path)
     mapID = 1
