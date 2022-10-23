@@ -517,7 +517,7 @@ class Board:
         for i in open:
             if (i!=start and i!=end):
                 pygame.draw.circle(win,BLUE,(i[1]*col_size + col_size/2,i[0]*row_size+row_size/2), col_size/3)
-def PGAME(graph,start,end,trace,bonus,portal,open,path,path_temp):
+def PGAME(graph,start,end,trace,bonus,portal,open,path,path_temp,algo):
     board = Board()
     path_ch=path+path_temp
     os.chdir(path_ch)
@@ -550,8 +550,8 @@ def PGAME(graph,start,end,trace,bonus,portal,open,path,path_temp):
         
         clock.tick(FPS)
     pygame.quit()
-    
-    os.system("ffmpeg -r 30 -f image2 -s 400x400 -i screen_%04d.png -vcodec libx264 -crf 25 video.mp4")
+    s = f'ffmpeg -r 30 -f image2 -s 400x400 -i screen_%04d.png -vcodec libx264 -crf 25 {algo}.mp4'
+    os.system(s)
     for i in range(1,frame_count+1):
         os.remove("screen_%04d.png"% ( i ))
     os.chdir(path)
