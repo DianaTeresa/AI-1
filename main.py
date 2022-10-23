@@ -199,8 +199,8 @@ def advance(maps):
 
 
 
-level_1(getInput('input\\level_1'))
+#level_1(getInput('input\\level_1'))
 level_2(getInput('input\\level_2'))
-advance(getInput('input\\advance'))
+#advance(getInput('input\\advance'))
 
 

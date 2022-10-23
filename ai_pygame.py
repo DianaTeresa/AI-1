@@ -87,7 +87,6 @@ def visualize_maze(matrix, bonus, portal, start, end, route=None, save_path=''):
     plt.show()
 
 
-
 def read_file(file_name: str):
     f = open(file_name,'r')
     n = int(next(f)[:-1])
