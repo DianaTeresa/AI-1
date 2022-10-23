@@ -49,8 +49,8 @@ def level_1(maps):
                 else:
                     adj.append(1)
             graph.append(adj)
-        
-        '''wayoutDFS, openDFS = ap.dfs(graph, start, goal)
+
+        wayoutDFS, openDFS = ap.dfs(graph, start, goal)
         path =f'\\output\\level_1\\input{mapID}\\dfs'
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutDFS, f'output\\level_1\\input{mapID}\\dfs\\dfs')
         ap.PGAME(graph, start, goal, wayoutDFS,bonus_points, openDFS,dir_path,path)
@@ -58,21 +58,21 @@ def level_1(maps):
         wayoutBFS, openBFS = ap.bfs(graph, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutBFS, f'output\\level_1\\input{mapID}\\bfs\\bfs')
         path =f'\\output\\level_1\\input{mapID}\\bfs'
-        ap.PGAME(graph, start, goal, wayoutBFS,bonus_points, openBFS,dir_path,path)'''
+        ap.PGAME(graph, start, goal, wayoutBFS,bonus_points, openBFS,dir_path,path)
 
         wayoutUCS, openUCS = ap.UCS(graph, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutUCS, f'output\\level_1\\input{mapID}\\ucs\\ucs')
-        path =f'\\output\\level_1\\input{mapID}\\UCS'
+        path = f'\\output\\level_1\\input{mapID}\\UCS'
         ap.PGAME(graph, start, goal, wayoutUCS,bonus_points, openUCS,dir_path,path)
 
         wayoutGBFS_1, openGBFS_1 = ap.GBFS_Heur1(graph, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutGBFS_1, f'output\\level_1\\input{mapID}\\gbfs_heuristic_1\\gbfs_heuristic_1')
-        path =f'\\output\\level_1\\input{mapID}\\gbfs_heuristic_1'
+        path = f'\\output\\level_1\\input{mapID}\\gbfs_heuristic_1'
         ap.PGAME(graph, start, goal, wayoutGBFS_1,bonus_points, openGBFS_1,dir_path,path)
 
         wayoutGBFS_2, openGBFS_2 = ap.GBFS_Heur2(graph, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutGBFS_2, f'output\\level_1\\input{mapID}\\gbfs_heuristic_2\\gbfs_heuristic_2')
-        path =f'\\output\\level_1\\input{mapID}\\gbfs_heuristic_2'
+        path = f'\\output\\level_1\\input{mapID}\\gbfs_heuristic_2'
         ap.PGAME(graph, start, goal, wayoutGBFS_2,bonus_points, openGBFS_2,dir_path,path)
 
         '''wayoutAstar_1, openAstar_1 = ap.a_star1(graph, start, goal)
@@ -118,7 +118,7 @@ def level_2(maps):
                     adj.append(1)
             graph.append(adj)
         wayout, openSet = ap.bonus_astar(matrix, bonus_points, start, goal)
-        path =f'\\output\\level_2\\input{mapID}'
+        path = f'\\output\\level_2\\input{mapID}'
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayout, f'output\\level_2\\input{mapID}\\output{mapID}')
         ap.PGAME(graph, start, goal, wayout,bonus_points, openSet,dir_path,path)
         with open(f'output\\level_2\\input{mapID}\\output{mapID}.txt', 'w') as file:
@@ -157,7 +157,7 @@ def advance(maps):
 
 
 
-#level_1(getInput('input\\level_1'))
+level_1(getInput('input\\level_1'))
 #level_2(getInput('input\\level_2'))
 #advance(getInput('input\\advance'))
 
