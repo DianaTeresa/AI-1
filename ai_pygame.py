@@ -459,9 +459,9 @@ class Board:
         win.fill(GRAY)
         pygame.draw.polygon(win,YELLOW,((start[1]*col_size, start[0]*row_size),(start[1]*col_size+col_size/2, start[0]*row_size +row_size/2),(start[1]*col_size+col_size, start[0]*row_size)))
         pygame.draw.rect(win,RED,(end[1]*col_size,end[0]*row_size+row_size/4,col_size,col_size))
-
-        for i in bonus:
-            pygame.draw.rect(win,GREEN,(i[1]*col_size,i[0]*row_size,col_size/1.1,row_size/1.1))
+        if bonus:
+            for i in bonus:
+                pygame.draw.rect(win,GREEN,(i[1]*col_size,i[0]*row_size,col_size/1.1,row_size/1.1))
         for row in range(len(graph)):
             for col in range(len(graph[0])):
                 if graph[row][col]== 1:
