@@ -1,8 +1,6 @@
 
 #from curses import KEY_ENTER
-from inspect import trace
 import os
-from venv import create
 import matplotlib.pyplot as plt
 import copy
 from heapq import heappop
@@ -14,6 +12,7 @@ from pyparsing import White
 import sys
 row = [-1, 0, 1, 0]
 col = [0, 1, 0, -1]
+weight =1 
 oo = 100000000
 RED =(255,0,0)
 WHITE = (255,255,255)
@@ -23,6 +22,7 @@ BISQUE =(255,228,196)
 BLUE = (135,206,250)
 YELLOW = (255,255,0)
 KHAKI = (255,246,143)
+GREEN = (144,238,144)
 weight =500
 height = 500
 
@@ -86,20 +86,6 @@ def visualize_maze(matrix, bonus, portal, start, end, route=None, save_path=''):
     plt.savefig(f'{save_path}.png', bbox_inches='tight')
     plt.show()
 
-    # print(f'Starting point (x, y) = {start[0], start[1]}')
-    # print(f'Ending point (x, y) = {end[0], end[1]}')
-    
-    # if bonus:
-    #     for _, point in enumerate(bonus):
-    #         print(f'Bonus point at position (x, y) = {point[0], point[1]} with point {point[2]}')   
-
-# def read_file(file_name: str = 'maze.txt'):
-#     f=open(file_name,'r')
-#     n_bonus_points = int(next(f)[:-1])
-#     bonus_points = []
-#     for i in range(n_bonus_points):
-#         x, y, reward = map(int, next(f)[:-1].split(' '))
-#         bonus_points.append((x, y, reward))
 
 
 def read_file(file_name: str):
@@ -209,7 +195,7 @@ def Is_Valid_Position(graph, node):
         if  node[0] < len(graph):
             if node[1] >=0:
                 if node[1] <len(graph[0]):
-                    return graph[node[0]][node[1]] == ' '
+                    return graph[node[0]][node[1]] == 0
     return False
 
 def Heuristic_1(current_node, goal):
@@ -383,136 +369,6 @@ def UCS(a, start, dest):
                 op.append(v)
     if trace[dest[0]][dest[1]] == None: return None, op
     return createPath(trace, start, dest), op
-def BFS_teleport(a, start, goal):
-  row = [-1, 0, 1, 0]
-  col = [0, 1, 0, -1]
-  r_size, c_size = len(a), len(a[0])
-  trace = [[None for i in range(c_size)] for j in range(r_size)]
-  Q = [start]
-  op = []
-  while Q:
-    u = Q.pop(0)
-    if (u == goal):
-      break
-    for k in range(4):
-      v = u[0] + row[k], u[1] + col[k]
-      if v[0] < 0 or v[0] > r_size or v[1] < 0 or v[1] > c_size:
-        continue
-      if a[v[0]][v[1]] == 'x' or a[v[0]][v[1]] == 'S' or trace[v[0]][v[1]] is not None: 
-        continue
-      trace[v[0]][v[1]] = u
-      if type(a[v[0]][v[1]]) == tuple:
-        w = a[v[0]][v[1]]
-        if trace[w[0]][w[1]] is None:
-          trace[w[0]][w[1]] = v
-          Q.append(w)
-          op.append(w)
-          continue
-      Q.append(v)
-      op.append(v)
-  if trace[goal[0]][goal[1]] == None: return None
-  return createPath(trace, start, goal), op
-
-# def Heuristic_Bonus(current_node, goal):
-#     x1,y1 = current_node
-#     x2,y2 = goal
-#     return abs(x1-x2)+abs(y1-y2)
-
-# def Is_Middle(graph, a,b,c):
-#     if a[0]==0 or a[0]==len(graph):
-#         if abs(a[0]-b[0]) < abs(a[0]-c[0]):
-#             return 1
-#     if a[1]==0 or a[1] == len(graph[0]):
-#         if abs(a[1]-b[1]) < abs(a[1]-c[1]):
-#             return 1
-#     return 0
-
-# def Check_Bonus(a, bonus_points, u, end):
-#     Min = oo
-#     Min_i = None
-#     pos = None
-#     for j in range(len(bonus_points)):
-#         i = bonus_points[j]
-#         if i[3] == True:
-#             tmp = Heuristic_Bonus(u,(i[0],i[1]))
-#             tmp1 = Heuristic_Bonus(u,end)
-#             tmp2 = Heuristic_Bonus((i[0],i[1]),end)
-#             if Is_Middle(a, end, u, i) == 1:
-#                 if tmp*2 < abs(i[2]):
-#                     if Min < abs(i[2])-tmp*2:
-#                         Min = abs(i[2])-tmp*2
-#                         Min_i, pos = i, j
-#             else:
-#                 if tmp1>tmp2:
-#                     if tmp<=abs(i[2]):
-#                         if Min < abs(i[2]) - tmp:
-#                             Min = abs(i[2]) - tmp
-#                             Min_i, pos = i, j
-#                 else:
-#                     if abs(tmp1-tmp2)+tmp < abs(i[2]):
-#                         if Min < abs(i[2])- abs(tmp1-tmp2) - tmp:
-#                             Min = abs(i[2])- abs(tmp1-tmp2) - tmp
-#                             Min_i, pos = i, j
-#     bonus_points[pos] = (Min_i[0], Min_i[1], Min_i[2], False)
-#     return Min_i
-
-# def Get_Bonus(new_node, bonus_points):
-#     for i in bonus_points:
-#         if (i[0],i[1]) == new_node:
-#             return i[2]
-
-# def a_star_bonus(graph, bonus_points, start, dest):
-#     distances = {(start[0], start[1]): 0}
-#     visited = set()
-#     trace = {start:None}
-#     goal = []
-#     goal.append(dest)
-#     open = []
-#     bonus_points = [(x[0], x[1], x[2], True) for x in bonus_points]
-
-#     pq = PriorityQueue()
-#     pq.put((0, (start[0], start[1])))
-
-#     while not pq.empty():
-#         _, node = pq.get()
-#         cur_row, cur_col = node
-#         if node == (goal[0][0],goal[0][1]):
-#             goal.pop(0)
-#         if goal == []:
-#             break
-        
-#         tmp_goal = Check_Bonus(graph, bonus_points, node, goal[0])
-#         if tmp_goal != None:
-#             goal.insert(0, (tmp_goal[0],tmp_goal[1]))
-
-#         for i in range(0,4):
-#             new_node = (cur_row + row[i], cur_col + col[i])
-            
-#             if Is_Valid_Position(graph, new_node) and new_node not in visited:
-#                 old_distance = distances.get(new_node, float('inf'))
-#                 if (graph[new_node[0]][new_node[1]]=='+'):
-#                     new_distance = distances[node] + weight + Get_Bonus(new_node, bonus_points)
-#                 else:
-#                     new_distance = distances[node] + weight
-#                 open.append(new_node)
-                
-#                 if new_distance < old_distance:
-#                     distances[new_node] = new_distance
-#                     priority = new_distance + Heuristic_Bonus(new_node, goal[0])
-#                     pq.put((priority, new_node))
-#                     trace[new_node] = node
-
-#                 visited.add(new_node)
-
-#     path = []
-#     f = dest
-#     while f != None:
-#         path.append(f)
-#         f = trace[f]
-        
-#     path.reverse()
-#     return path, open
-
 def nearest_bonus_point(u, bonus_points):
     res = None
     for v in bonus_points:
@@ -593,18 +449,19 @@ def Bellman_Ford(matrix, bonus_points, start, goal):
         if stop: break
     if trace[goal[0]][goal[1]] is None: return None
     return createPath(trace, start, goal)
-                        
 class Board:
     def _init_(self):
         self.board = []
         self.selected_piece = None
-    def draw_cube(self,win,graph,start,end):
+    def draw_cube(self,win,graph,start,end, bonus):
         row_size=weight//len(graph)
         col_size=height//len(graph[0])
         win.fill(GRAY)
         pygame.draw.polygon(win,YELLOW,((start[1]*col_size, start[0]*row_size),(start[1]*col_size+col_size/2, start[0]*row_size +row_size/2),(start[1]*col_size+col_size, start[0]*row_size)))
         pygame.draw.rect(win,RED,(end[1]*col_size,end[0]*row_size+row_size/4,col_size,col_size))
-        
+
+        for i in bonus:
+            pygame.draw.rect(win,GREEN,(i[1]*col_size,i[0]*row_size,col_size/1.1,row_size/1.1))
         for row in range(len(graph)):
             for col in range(len(graph[0])):
                 if graph[row][col]== 1:
@@ -621,11 +478,13 @@ class Board:
         for i in open:
             if (i!=start and i!=end):
                 pygame.draw.circle(win,BLUE,(i[1]*col_size + col_size/2,i[0]*row_size+row_size/2), col_size/3)
-def PGAME(graph,start,end,trace,open):
+def PGAME(graph,start,end,trace,bonus,open,path,path_temp):
     board = Board()
+    path_ch=path+path_temp
+    os.chdir(path_ch)
     FPS = 60
     WIN =pygame.display.set_mode((weight,height))
-    board.draw_cube(WIN,graph,start,end) 
+    board.draw_cube(WIN,graph,start,end, bonus) 
     run = True
     row_size=weight//len(graph)
     col_size=height//len(graph[0])
@@ -652,72 +511,8 @@ def PGAME(graph,start,end,trace,open):
         
         clock.tick(FPS)
     pygame.quit()
-    os.system("ffmpeg -r 30 -f image2 -s 400x400 -i screen_%04d.png -vcodec libx264 -crf 25  window_video.mp4")
-def main():
     
-    for mapId in range(2,3):
-        bonus_points, portals, matrix = read_file(f'../Maps/Maapp/{mapId}.txt')
-        print(f'The height of the matrix: {len(matrix)}')
-        print(f'The width of the matrix: {len(matrix[0])}')
-
-        # Xác định 2 điểm đầu cuối
-        for i in range(len(matrix)):
-            for j in range(len(matrix[0])):
-                if matrix[i][j]=='S':
-                    start=(i,j)
-
-                elif matrix[i][j]==' ':
-                    if (i==0) or (i==len(matrix)-1) or (j==0) or (j==len(matrix[0])-1):
-                        end=(i,j)
-                        
-                else:
-                    pass
-
-        
-        row=len(matrix)
-        col=len(matrix[0])
-        graph=[]
-
-        for i in range(len(matrix)):
-            adj=[]
-            for j in range(len(matrix[0])):
-                if matrix[i][j]!='x':
-                    adj.append(0)
-                else:
-                    adj.append(1)
-            graph.append(adj)
-         
-        
-        '''wayoutDFS,openDFS=dfs(graph, start, end)
-        visualize_maze(matrix, bonus_points, portals, start, end, wayoutDFS)
-        print(f'DFS: Cost = {len(wayoutDFS)-1}\n')'''
-          
-
-        wayoutBFS, openBFS =bfs(graph, start, end)
-        visualize_maze(matrix, bonus_points, portals, start, end, wayoutBFS)
-        print(f'BFS: Cost = {len(wayoutBFS)-1}\n')
-
-        #PGAME(graph,start,end,wayoutBFS,openBFS)
-        '''wayoutUCS=UCS(graph, start, end)
-        visualize_maze(matrix, bonus_points, portals, start, end, wayoutUCS)
-        print(f'UCS: Cost = {len(wayoutUCS)-1}\n')
-
-        wayoutGBFS1=GBFS_Heur1(graph, start, end)
-        visualize_maze(matrix, bonus_points, portals, start, end, wayoutGBFS1)
-        print(f'GBFS1: Cost = {len(wayoutGBFS1)-1}\n')
-
-        wayoutGBFS2=GBFS_Heur2(graph, start, end)
-        visualize_maze(matrix, bonus_points, portals, start, end, wayoutGBFS2)
-        print(f'GBFS2: Cost = {len(wayoutGBFS2)-1}\n')'''
-
-        #wayoutASTAR1, openASTAR1=a_star1(graph, start, end)
-        #visualize_maze(matrix,bonus_points,start,end,wayoutASTAR1)
-        #print(f'A_STAR1: Cost = {len(wayoutASTAR1)-1}\n')
-        #PGAME(graph,start,end,wayoutASTAR1,openASTAR1)
-        #wayoutASTAR2,openASTAR2=a_star2(graph, start, end)
-        #visualize_maze(matrix,bonus_points,start,end,wayoutASTAR2)
-        #print(f'A_STAR2: Cost = {len(wayoutASTAR2)-1}\n')
-        #PGAME(graph,start,end,wayoutASTAR2,openASTAR2)
-
-# if __name__=="__main__":
-#     main()
+    os.system("ffmpeg -r 30 -f image2 -s 400x400 -i screen_%04d.png -vcodec libx264 -crf 25 video.mp4")
+    for i in range(1,frame_count+1):
+        os.remove("screen_%04d.png"% ( i ))
+    os.chdir(path)
