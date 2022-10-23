@@ -449,16 +449,55 @@ def Bellman_Ford(matrix, bonus_points, start, goal):
         if stop: break
     if trace[goal[0]][goal[1]] is None: return None
     return createPath(trace, start, goal)
+
+def BFS_teleport(a, start, goal):
+  row = [-1, 0, 1, 0]
+  col = [0, 1, 0, -1]
+  r_size, c_size = len(a), len(a[0])
+  trace = [[None for i in range(c_size)] for j in range(r_size)]
+  Q = [start]
+  op = []
+  while Q:
+    u = Q.pop(0)
+    if (u == goal):
+      break
+    for k in range(4):
+      v = u[0] + row[k], u[1] + col[k]
+      if v[0] < 0 or v[0] > r_size or v[1] < 0 or v[1] > c_size:
+        continue
+      if a[v[0]][v[1]] == 'x' or a[v[0]][v[1]] == 'S' or trace[v[0]][v[1]] is not None: 
+        continue
+      trace[v[0]][v[1]] = u
+      if type(a[v[0]][v[1]]) == tuple:
+        w = a[v[0]][v[1]]
+        if trace[w[0]][w[1]] is None:
+          trace[w[0]][w[1]] = v
+          Q.append(w)
+          op.append(w)
+          continue
+      Q.append(v)
+      op.append(v)
+  if trace[goal[0]][goal[1]] == None: return None
+  return createPath(trace, start, goal), op
 class Board:
     def _init_(self):
         self.board = []
         self.selected_piece = None
-    def draw_cube(self,win,graph,start,end, bonus):
+    def draw_cube(self,win,graph,start,end, bonus, portal):
         row_size=weight//len(graph)
         col_size=height//len(graph[0])
         win.fill(GRAY)
         pygame.draw.polygon(win,YELLOW,((start[1]*col_size, start[0]*row_size),(start[1]*col_size+col_size/2, start[0]*row_size +row_size/2),(start[1]*col_size+col_size, start[0]*row_size)))
         pygame.draw.rect(win,RED,(end[1]*col_size,end[0]*row_size+row_size/4,col_size,col_size))
+        pygame.font.init()
+        NUM_FONT = pygame.font.Font(pygame.font.get_default_font(), 20)
+        if portal:
+            count = 0
+            for i in portal:
+                count = count +1
+                text = NUM_FONT.render(str(count),1,GREEN)
+                win.blit(text,(i[1]*col_size,i[0]*row_size))
+                win.blit(text,(i[3]*col_size,i[2]*row_size))
         if bonus:
             for i in bonus:
                 pygame.draw.rect(win,GREEN,(i[1]*col_size,i[0]*row_size,col_size/1.1,row_size/1.1))
@@ -478,13 +517,13 @@ class Board:
         for i in open:
             if (i!=start and i!=end):
                 pygame.draw.circle(win,BLUE,(i[1]*col_size + col_size/2,i[0]*row_size+row_size/2), col_size/3)
-def PGAME(graph,start,end,trace,bonus,open,path,path_temp):
+def PGAME(graph,start,end,trace,bonus,portal,open,path,path_temp):
     board = Board()
     path_ch=path+path_temp
     os.chdir(path_ch)
     FPS = 60
     WIN =pygame.display.set_mode((weight,height))
-    board.draw_cube(WIN,graph,start,end, bonus) 
+    board.draw_cube(WIN,graph,start,end, bonus, portal) 
     run = True
     row_size=weight//len(graph)
     col_size=height//len(graph[0])
