@@ -3,7 +3,7 @@ import ai_pygame as ap
 import ai as a
 
 if os.name == 'nt':
-    slash = '{slash}'
+    slash = '\\'
 else:
     slash = '//'
 
