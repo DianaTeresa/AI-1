@@ -10,6 +10,7 @@ else:
 def getInput(path):
     script_path = os.path.realpath(__file__)
     dir_path = os.path.dirname(script_path)
+    dir_path = os.path.dirname(dir_path)
     path = os.path.join(dir_path, path)
     dir = os.scandir(path)
     print(path)
@@ -27,6 +28,7 @@ def level_1(maps):
     algos = {'dfs', 'bfs', 'ucs', 'gbfs_heuristic_1', 'gbfs_heuristic_2', 'astar_heuristic_1', 'astar_heuristic_2'}
     script_path = os.path.realpath(__file__)
     dir_path = os.path.dirname(script_path)
+    dir_path = os.path.dirname(dir_path)
     new_abs_path = os.path.join(dir_path, 'output')
     if not os.path.exists(new_abs_path):
         os.mkdir(new_abs_path)
@@ -66,59 +68,61 @@ def level_1(maps):
             graph.append(adj)
         
         wayoutDFS, openDFS = ap.dfs(graph, start, goal)
-        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}dfs'
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutDFS, f'output{slash}level_1{slash}input{mapID}{slash}dfs{slash}dfs')
-        ap.PGAME(graph, start, goal, wayoutDFS,bonus_points, portals, openDFS,dir_path,path,'dfs')
         with open(f'output{slash}level_1{slash}input{mapID}{slash}dfs{slash}dfs.txt', 'w') as file:
             file.write(f'Cost: {len(wayoutDFS) - 1}')
+        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}dfs'
+        ap.PGAME(graph, start, goal, wayoutDFS,bonus_points, portals, openDFS,dir_path,path,'dfs')
         
         wayoutBFS, openBFS = ap.bfs(graph, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutBFS, f'output{slash}level_1{slash}input{mapID}{slash}bfs{slash}bfs')
-        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}bfs'
-        ap.PGAME(graph, start, goal, wayoutBFS,bonus_points, portals, openBFS,dir_path,path,'bfs')
         with open(f'output{slash}level_1{slash}input{mapID}{slash}bfs{slash}bfs.txt', 'w') as file:
             file.write(f'Cost: {len(wayoutBFS) - 1}')
+        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}bfs'
+        ap.PGAME(graph, start, goal, wayoutBFS,bonus_points, portals, openBFS,dir_path,path,'bfs')
 
         wayoutUCS, openUCS = ap.UCS(graph, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutUCS, f'output{slash}level_1{slash}input{mapID}{slash}ucs{slash}ucs')
-        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}UCS'
-        ap.PGAME(graph, start, goal, wayoutUCS,bonus_points, portals, openUCS,dir_path,path, 'ucs')
         with open(f'output{slash}level_1{slash}input{mapID}{slash}ucs{slash}ucs.txt', 'w') as file:
             file.write(f'Cost: {len(wayoutUCS) - 1}')
+        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}UCS'
+        ap.PGAME(graph, start, goal, wayoutUCS,bonus_points, portals, openUCS,dir_path,path, 'ucs')
 
         wayoutGBFS_1, openGBFS_1 = ap.GBFS_Heur1(graph, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutGBFS_1, f'output{slash}level_1{slash}input{mapID}{slash}gbfs_heuristic_1{slash}gbfs_heuristic_1')
-        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}gbfs_heuristic_1'
-        ap.PGAME(graph, start, goal, wayoutGBFS_1,bonus_points, portals, openGBFS_1,dir_path,path,'gbfs_heuristic_1')
         with open(f'output{slash}level_1{slash}input{mapID}{slash}gbfs_heuristic_1{slash}gbfs_heuristic_1.txt', 'w') as file:
             file.write(f'Cost: {len(wayoutGBFS_1) - 1}')
+        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}gbfs_heuristic_1'
+        ap.PGAME(graph, start, goal, wayoutGBFS_1,bonus_points, portals, openGBFS_1,dir_path,path,'gbfs_heuristic_1')
 
         wayoutGBFS_2, openGBFS_2 = ap.GBFS_Heur2(graph, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutGBFS_2, f'output{slash}level_1{slash}input{mapID}{slash}gbfs_heuristic_2{slash}gbfs_heuristic_2')
-        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}gbfs_heuristic_2'
-        ap.PGAME(graph, start, goal, wayoutGBFS_2,bonus_points, portals, openGBFS_2,dir_path,path,'gbfs_heuristic_2')
         with open(f'output{slash}level_1{slash}input{mapID}{slash}gbfs_heuristic_2{slash}gbfs_heuristic_2.txt', 'w') as file:
             file.write(f'Cost: {len(wayoutGBFS_2) - 1}')
+        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}gbfs_heuristic_2'
+        ap.PGAME(graph, start, goal, wayoutGBFS_2,bonus_points, portals, openGBFS_2,dir_path,path,'gbfs_heuristic_2')
 
         wayoutAstar_1, openAstar_1 = ap.a_star1(graph, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutAstar_1, f'output{slash}level_1{slash}input{mapID}{slash}astar_heuristic_1{slash}astar_heuristic_1')
-        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}astar_heuristic_1'
-        ap.PGAME(graph, start, goal, wayoutAstar_1,bonus_points, portals, openAstar_1,dir_path,path,'astar_heuristic_1')
         with open(f'output{slash}level_1{slash}input{mapID}{slash}astar_heuristic_1{slash}astar_heuristic_1.txt', 'w') as file:
             file.write(f'Cost: {len(wayoutAstar_1) - 1}')
+        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}astar_heuristic_1'
+        ap.PGAME(graph, start, goal, wayoutAstar_1,bonus_points, portals, openAstar_1,dir_path,path,'astar_heuristic_1')
+
 
         wayoutAstar_2, openAstar_2 = ap.a_star2(graph, start, goal)
         ap.visualize_maze(matrix, bonus_points, portals, start, goal, wayoutAstar_2, f'output{slash}level_1{slash}input{mapID}{slash}astar_heuristic_2{slash}astar_heuristic_2')
-        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}astar_heuristic_2'
-        ap.PGAME(graph, start, goal, wayoutAstar_2,bonus_points, portals, openAstar_2,dir_path,path,'astar_heuristic_2')
         with open(f'output{slash}level_1{slash}input{mapID}{slash}astar_heuristic_2{slash}astar_heuristic_2.txt', 'w') as file:
             file.write(f'Cost: {len(wayoutAstar_2) - 1}') 
-  
+        path =f'{slash}output{slash}level_1{slash}input{mapID}{slash}astar_heuristic_2'
+        ap.PGAME(graph, start, goal, wayoutAstar_2,bonus_points, portals, openAstar_2,dir_path,path,'astar_heuristic_2')
+   
         mapID += 1
 
 def level_2(maps):
     script_path = os.path.realpath(__file__)
     dir_path = os.path.dirname(script_path)
+    dir_path = os.path.dirname(dir_path)
     new_abs_path = os.path.join(dir_path, 'output')
     if not os.path.exists(new_abs_path):
         os.mkdir(new_abs_path)
@@ -164,6 +168,7 @@ def level_2(maps):
 def advance(maps):
     script_path = os.path.realpath(__file__)
     dir_path = os.path.dirname(script_path)
+    dir_path = os.path.dirname(dir_path)
     new_abs_path = os.path.join(dir_path, 'output')
     if not os.path.exists(new_abs_path):
         os.mkdir(new_abs_path)

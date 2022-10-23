@@ -84,8 +84,6 @@ def visualize_maze(matrix, bonus, portal, start, end, route=None, save_path=''):
     plt.xticks([])
     plt.yticks([])
     plt.savefig(f'{save_path}.png', bbox_inches='tight')
-    plt.show()
-
 
 def read_file(file_name: str):
     f = open(file_name,'r')
