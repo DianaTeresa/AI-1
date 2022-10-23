@@ -3,13 +3,18 @@ import ai_pygame as ap
 import ai as a
 
 def getInput(path):
+    script_path = os.path.realpath(__file__)
+    dir_path = os.path.dirname(script_path)
+    path = os.path.join(dir_path, path)
     dir = os.scandir(path)
+    print(path)
     maps, nMaps = [], 0
     for entry in dir:
         if entry.is_file():
             nMaps += 1
     for mapID in range(nMaps):
-        input_path = path + f'\\input{mapID + 1}.txt'
+        p = f'input{mapID + 1}.txt'
+        input_path = os.path.join(path, p)
         maps.append(ap.read_file(input_path))
     return maps
 
